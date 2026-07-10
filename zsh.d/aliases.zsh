@@ -89,8 +89,6 @@ alias cd..='cd ..' ## cuz one extra space is too much
 alias cnv='cd ~/.config/nvim/'
 alias nv='nvim' ## neovim, we love neovim
 alias nlu='nvim ~/.config/nvim/init.lua' ## neovim lua
-alias vlu='v ~/.config/nvim-lazy/init.lua'
-alias alu='a ~/.config/nvim-astronvim/init.lua'
 alias ntmxcnf='nvim ~/.tmux.conf' ## weird ass name
 alias neovim='nvim' ## cuz for some reason neovim doesnt include neovim
 alias ldf='ls -d .*' ## list only dotfiles
@@ -318,9 +316,7 @@ alias n10k='nvim ~/.p10k.zsh'
 alias 10n='n10k'
 alias 10k='p1c'
 alias w='which'
-alias an='NVIM_APPNAME="nvim-astronvim" nvim'
 alias nastro='na'
-alias v='NVIM_APPNAME="nvim-lazy" nvim'
 alias mzsh='m ~/.zshrc'
 alias ao='./a.out'
 alias mdp='mkdir -p'

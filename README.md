@@ -2,7 +2,7 @@
 ------------------------------------------------------
 ## what it is:
 ------------------------------------------------------
-a personal collection of termux configuration files (an entire bundle) with ***major*** modifications, including but *not limited to*: **simplified android integration (package management (apk installation, app deletion, extracting apk files, media scanning, and so on..) , prompt customization (powerlevel10k), termux package management duality (apt & pacman support), *efficiency*.**
+a collection of termux configuration files (an entire bundle) with ***major*** modifications, including but *not limited to*: **simplified android integration (package management (apk installation, app deletion, extracting apk files, media scanning, and so on..) , prompt customization (powerlevel10k), termux package management duality (apt & pacman support), *efficiency*.**
 
 ## how it works:
 ------------------------------------------------------
