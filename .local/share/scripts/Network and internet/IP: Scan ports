@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+
+# Source the script '.common-functions.sh'.
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+ROOT_DIR=$(grep --only-matching "^.*scripts[^/]*" <<<"$SCRIPT_DIR")
+source "$ROOT_DIR/.common-functions.sh"
+
+_main() {
+    local input_files=""
+    local output_dir=""
+
+    # Execute initial checks.
+    _check_dependencies "nmap"
+    _display_wait_box "2"
+    input_files=$(_get_files "par_type=file")
+
+    # Export functions to be used inside new shells (when using 'xargs').
+    export -f _resolve_host
+
+    # Execute the function '_main_task' for each file in parallel.
+    _run_task_parallel "$(_prepare_input "$input_files")" "$output_dir"
+
+    local std_output=""
+    std_output=$(_storage_text_read_all)
+
+    _display_text_box "$std_output"
+}
+
+_main_task() {
+    local input_file=$1
+    local output_dir=$2
+    local std_output=""
+    local timeout_value="5"
+    local status="🟡"
+    local hostname=""
+
+    # Run the main process.
+    std_output=$(LC_ALL=C nmap -n -Pn -T4 --max-retries 1 --host-timeout "$timeout_value"s "$input_file" 2>/dev/null)
+
+    # shellcheck disable=SC2001
+    std_output=$(grep --extended-regexp "^[0-9]+/(tcp|udp)\b" <<<"$std_output")
+
+    if [[ -z "$std_output" ]]; then
+        std_output="(None)"
+        status="🔴"
+    elif [[ "$std_output" == *" open "* ]]; then
+        status="🟢"
+    fi
+
+    hostname=$(_resolve_host "$input_file")
+    if [[ -n "$hostname" ]]; then
+        hostname=" ($hostname)"
+    fi
+
+    _storage_text_write_ln "$status IP: $input_file$hostname"$'\n'"$std_output"$'\n'
+}
+
+_extract_ips() {
+    local data=$1
+    local output=""
+    local ip=""
+    local base=""
+    local start=""
+    local end=""
+
+    if [[ -z "$data" ]]; then
+        return
+    fi
+
+    # Extract:
+    #   - Single IPs
+    #   - IP ranges (192.168.1.1-254)
+    #   (CIDR notation like 192.168.1.0/24 is ignored)
+    data=$(grep -oP '\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)(?:-\d{1,3})?\b' <<<"$data")
+
+    # Expand IP ranges.
+    while read -r ip; do
+        # Case: IP range (e.g., 192.168.1.1-254).
+        if [[ "$ip" =~ ^([0-9]+\.[0-9]+\.[0-9]+)\.([0-9]+)-([0-9]+)$ ]]; then
+            base="${BASH_REMATCH[1]}"
+            start="${BASH_REMATCH[2]}"
+            end="${BASH_REMATCH[3]}"
+            for ((i = start; i <= end; i++)); do
+                output+="$base.$i"$'\n'
+            done
+        # Case: Single IP.
+        else
+            output+="$ip"$'\n'
+        fi
+    done <<<"$data"
+
+    output=$(sort --unique <<<"$output")
+    output=$(_text_remove_empty_lines "$output")
+
+    printf "%s" "$output"
+}
+
+_prepare_input() {
+    local input_files=$1
+    local file_data=""
+    local ips=""
+
+    # shellcheck disable=SC2086
+    file_data=$(cat -- $input_files 2>/dev/null)
+    ips=$(_extract_ips "$file_data")
+
+    if [[ -z "$ips" ]]; then
+        _display_error_box "There are no valid IPs in the selected file(s)!"
+        _exit_script
+    fi
+
+    _convert_text_to_delimited_string "$ips"
+}
+
+_resolve_host() {
+    local ip=$1
+    local hostname=""
+
+    # Try local resolution.
+    hostname=$(grep "$ip" </etc/hosts | awk '{print $2}' | head -n1)
+
+    if [[ -n "$hostname" ]]; then
+        printf "%s" "$hostname"
+        return 0
+    fi
+
+    # Try SSH config files.
+    hostname=$(grep -i -r -h -B3 "Hostname .*$ip" "$HOME/.ssh/" 2>/dev/null |
+        grep -i "Host " | awk '{print $2}' | head -n 1)
+
+    if [[ -n "$hostname" ]]; then
+        printf "%s" "$hostname"
+        return 0
+    fi
+
+    # If not found locally, try online resolution.
+    if _command_exists "host"; then
+        hostname=$(host "$ip" | awk '/domain name pointer/ {print $5}')
+    elif _command_exists "dig"; then
+        hostname=$(dig -x "$ip" +short)
+    fi
+
+    # shellcheck disable=SC2001
+    hostname=$(sed "s|\.$||" <<<"$hostname")
+
+    printf "%s" "$hostname"
+}
+
+_main "$@"

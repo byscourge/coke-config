@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Github
+Comment=
+Exec=firefox "https://github.com"
+Icon=web-github
+Path=
+Terminal=false
+StartupNotify=true

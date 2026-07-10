@@ -1,0 +1,22 @@
+s=$(command -V deactivate_lua 2>&1)
+if [ $? -eq 0 ]; then
+    if [ "${s##*function*}" = '' ]; then
+        deactivate_lua
+    fi;
+fi;
+
+deactivate_lua () {
+    if [ -x '/data/data/com.termux/files/home/.local/share/nvim/lazy-rocks/hererocks/bin/lua' ]; then
+        PATH=`'/data/data/com.termux/files/home/.local/share/nvim/lazy-rocks/hererocks/bin/lua' '/data/data/com.termux/files/home/.local/share/nvim/lazy-rocks/hererocks/bin/get_deactivated_path.lua'`
+        export PATH
+
+        hash -r 2>/dev/null
+    fi
+
+    unset -f deactivate_lua
+}
+
+PATH='/data/data/com.termux/files/home/.local/share/nvim/lazy-rocks/hererocks/bin':"$PATH"
+export PATH
+
+hash -r 2>/dev/null

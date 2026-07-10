@@ -1,0 +1,11 @@
+unalias grep 2>/dev/null
+unalias cat 2>/dev/null
+unalias rd 2>/dev/null
+unalias rmdir 2>/dev/null
+unalias rish 2>/dev/null
+unalias char 2>/dev/null
+unalias search 2>/dev/null
+unalias so 2>/dev/null
+unalias su 2>/dev/null
+unalias jj 2>/dev/null
+unalias l 2>/dev/null
