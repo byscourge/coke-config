@@ -303,8 +303,6 @@ alias gag='z *' ## sounds sexual, dunno why i named it this
 alias xhmod='chmod' ## typos still hurt and so do my fingers now. ive been commenting for half an hour FUCK my ~/.zshrc is massive😭😭😭😭
 alias com='xhmod'
 alias con='chcon'
-alias RMG='rm -f *' # # # G/g = glob
-alias RDG='rm -rf *' # # # capitalized to avoid accidental use cuz im a dumbass
 alias piss='pip install' ## what name can you remember better than piss
 alias purr='pip uninstall' ## meow
 alias pun='pip uninstall' ## no pun intended
