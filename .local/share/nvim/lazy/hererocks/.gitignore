@@ -1,0 +1,14 @@
+.*
+!.gitignore
+!.github/
+!.flake8
+
+*.py[co]
+*.egg-info/
+dist/
+uv.lock
+
+test/here/
+test/builds/
+test/luarocks/
+coverage.xml
