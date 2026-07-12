@@ -10,7 +10,6 @@
 .zcompdump*
 *.zwc
 *.lock
-.tmp/
 .pki/
 .dbus/
 .termux_authinfo
@@ -19,7 +18,6 @@
 *_history*
 *history*
 *.history*
-.viminfo
 .vscode-oss/
 .android/
 .npm/
