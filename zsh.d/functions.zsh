@@ -1839,6 +1839,7 @@ fflib() {
 alt() {
 
   if [[ $PKG == "apt" ]]; then
+    # check if nala is installed
     if ! command -v nala >/dev/null 2>&1; then
         critical "Uh-Oh! nala not found, can be installed by running:\n apt install nala\n"
         return 1
@@ -1878,45 +1879,8 @@ alt() {
         command nala "$cmd" "$@"
         ;;
     esac
-  elif [[ "$PKG" == "pacman" ]]; then
-
-
-    if [ -z "$1" ]; then
-        pacman -h
-        return 0
-    fi
-
-    local cmd="$1"
-    shift
-
-    case "$cmd" in
-    install | in | add)
-        pacman -S "$@"
-        ;;
-    search | look | sr | find)
-        pacman -Ss "$@"
-        ;;
-    update | upd)
-        pacman -Sy "$@"
-        ;;
-    upgrade | upg)
-        pacman -Su "$@"
-        ;;
-    up)
-      pacman -Syu "$@"
-      ;;
-    show | info | inf | see)
-        pacman -Si "$@"
-        ;;
-    remove | del | delete | rm | rem | uninstall)
-        pacman -R "$@"
-        ;;
-    *)
-        pacman "$cmd" "$@"
-        ;;
-    esac
   else
-    critical "critical: package manager unsupported by config, abort\n"
-  return 255
+    critical "Uh-Oh! this wrapper script was made for apt, and it seems you are using something different.\n"
+    return 1
   fi
   }
