@@ -71,6 +71,7 @@ alias lo='locate' ## cuz locate is too long
 alias lco='locate'
 alias loc='locate'
 alias cls='clear && lsd' ## clears and lists files/dirs in ./dir
+alias clsa='clear && lsd -a'
 alias lsl='lsd -l'
 alias lns='ln -s'
 alias mdr='mkdir'

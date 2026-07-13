@@ -1854,7 +1854,7 @@ alt() {
     shift
 
     case "$cmd" in
-    install | in | add)
+    install | in | add | i)
         command nala install "$@"
         ;;
     search | look | sr | find)
@@ -1866,13 +1866,13 @@ alt() {
     upgrade | upg)
         command nala upgrade "$@"
         ;;
-    up)
+    u | up)
       command nala update && command nala upgrade "$@"
       ;;
     show | info | inf | see)
         command nala show "$@"
         ;;
-    remove | del | delete | rm | rem | uninstall)
+    remove | del | delete | rm | rem | uninstall | r)
         command nala remove "$@"
         ;;
     *)

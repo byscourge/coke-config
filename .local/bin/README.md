@@ -1,6 +1,6 @@
 Some of the binaries here are only used for when you dont have the official versions installed, do not use these unless required to.
 
-it is reccomended to **alt add** the official versions. examples:
+it is reccomended to apt install/pacman -S the official versions. examples:
 zsh, vim, bash, busybox, speedtest-go, ani-cli, nvim, diff, ldd, rxfetch, git, yt-dlp
 
 
