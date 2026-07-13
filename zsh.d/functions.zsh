@@ -449,9 +449,9 @@ su() { ## emulates a semi-root enviroment with shell(2000) priveleges via shizuk
   fi
   
   local shizuku.IsRunning() {
-    if ! {rish -c "return 0;"} then
+    if ! {rish -c "return 0"} then
       critical "stderr: Critical [Shizuku failed.]; it may not be installed, configured properly, or running; Abort.\n"
-      exit 255
+      return 255
     else
       return 0;
     fi
