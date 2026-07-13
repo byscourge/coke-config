@@ -1059,11 +1059,31 @@ fix::bash.bashrc\\ENOPERM() {
 
 # logic end
 
+shizuku.IsRunning || return 1
+
+
 if [[ -z "$1" ]]; then
+  if already:Installed; then
+    boot.Init+Validation
+    return
+  else
+    err "seems like the su() enviroment isn't installed,\ndo you want to install it? [y/N]: "
+    local reply
+    read -r reply
+    case "$reply" in
+      y | Y)
+        boot.Init+Validation
+        ;;
+      *)
+        info "Abort.\n"
+        return 1
+        ;;
+    esac
+  fi
+fi
 
-  boot.Init+Validation
 
-elif [[ -n "$1" ]]; then
+if [[ -n "$1" ]]; then
 
   if [[ "$1" == -*  ]]; then
   case "$1" in
@@ -1226,7 +1246,9 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
              export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
              alias ls="ls --color=auto"
              exec eval "$*"' -- "$*"
-    else; critical "Uh-Oh! su is not installed and sudo couldnt run, if you want to run sudo anyways, pass -f, or use the \`so\` alias; but beware that text editors wont work.\n"
+    else; 
+      critical "Uh-Oh! su is not installed and sudo couldnt run,\n"
+      info "but to run sudo commands anyways, use the \'so\' command.\n"""
     return 1
     fi
 }
