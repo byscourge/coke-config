@@ -41,22 +41,6 @@ pkch() { ## simple pkg searching function
   rish -c "pm list packages | grep -i \"$*\" | sed 's/package://g'"
 }
 
-sch() { #stands for superfastcharging toggle;
-rish -c "am start -a android.settings.SETTINGS && sleep 1
-input swipe 530 2100 530 470 50 && #swipe down to the end of settings
-sleep 0.5 &&
-input tap 790 870 && #go into Battery and device care
-sleep 0.8 &&
-input tap 550 1100 && #go into battery
-sleep 0.5 &&
-input swipe 530 2100 530 470 50 && #swipe down to the end
-sleep 0.5 &&
-input tap 550 1460 && #go into charging settings
-sleep 0.5 &&
-input tap 550 770 #toggle superfastcharging
-"
-}
-
 ccont() { ## stands for copy content (copy=c (conent=cont))
   cat "$@" | termux-clipboard-set
 }
