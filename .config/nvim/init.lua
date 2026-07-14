@@ -154,22 +154,18 @@ vim.opt.guicursor = {
   "c:ver25"       -- command mode = vertical bar
 }
 
-local lspconfig = require("lspconfig")
-
--- C/C++
-lspconfig.clangd.setup {}
-
--- Python
-lspconfig.pyright.setup{}
-
--- JavaScript / TypeScript
-lspconfig.ts_ls.setup{}
-
--- HTML
-lspconfig.html.setup{}
-
--- CSS
-lspconfig.cssls.setup{}
+vim.lsp.config.clangd = {
+  cmd = {"clangd"},
+  root_markers = {".clangd", "compile_commands.json", "compile_flags.txt"},
+  filetypes = {"c", "cpp", "objc", "objcpp"},
+}
+vim.lsp.config.pyright = {
+  cmd = {"pyright-langserver", "--stdio"},
+  root_markers = {"pyproject.toml", "setup.py", "requirements.txt"},
+  filetypes = {"python"},
+}
+-- Add others similarly
+vim.lsp.enable({"clangd", "pyright", "ts_ls", "html", "cssls"})
 
 -- vim.api.nvim_create_autocmd("BufNewFile", {
 --   pattern = "*.html",
