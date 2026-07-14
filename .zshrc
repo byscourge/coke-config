@@ -13,8 +13,6 @@ source ~/zsh.d/plugins.zsh # zsh plugins, eg git fzf etc
 
 source ~/zsh.d/themes.zsh # themes, eg powerlevel10k
 
-source ~/zsh.d/pkgchecks.zsh # check if user has apt or pacman for scripts
-
 source ~/zsh.d/unfunctions.zsh # functions to be forgotten
 
 source ~/zsh.d/hooks.zsh # scripts that hook onto zsh, eg zoxide
@@ -31,7 +29,9 @@ source ~/zsh.d/aliases.zsh # aliases duplicate, "why source aliases twice?", wel
 
 source ~/zsh.d/keybinds.zsh # keybinds
 
-source ~/zsh.d/exports.zsh # env vars duplicate to ensure not overrideb
+source ~/zsh.d/exports.zsh # env vars duplicate to ensure not overriden
+
+source ~/zsh.d/pkgchecks.zsh # check if user has apt or pacman for scripts
 
 ZSH_HIGHLIGHT_STYLES[command]='fg=183'
 ZSH_HIGHLIGHT_STYLES[alias]='fg=183'
@@ -45,9 +45,9 @@ pf "ZShell took [${ZSHRC_ELAPSED_MS}ms] to load.\n" # prints to buffer
 source ~/zsh.d/.print.pkg.version # prints your pkg managers version
 
 
-# the duplicates are intentional btw ❤️
+# the duplicates are intentional.
 
 else
-  err "Uh-Oh! stderr: Critical[]; OS Type is not android :(\n"
+  err "Uh-Oh! critical: OS Type is not android\n"
   return 255;
 fi

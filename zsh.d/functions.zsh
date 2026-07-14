@@ -701,6 +701,8 @@ local runEnviroment() {
 
   already:Installed() {
 
+    shizuku.IsRunning || return 1
+
     [[ -d /data/local/tmp/sh ]] || return 255
 
     shellDirs=(
@@ -1043,9 +1045,6 @@ fix::bash.bashrc\\ENOPERM() {
 
 # logic end
 
-shizuku.IsRunning || return 1
-
-
 if [[ -z "$1" ]]; then
   if already:Installed; then
     boot.Init+Validation
@@ -1182,7 +1181,7 @@ return 0
 
         esac ;;
 
-    --sudo-test) already:Installed && return 0 ;;
+    --sudo-test) already:Installed && return 0 ;; # scripting purposes
     
     *) err "Invalid option: \"$1\"; run su -h to see valid flags.\n"; return 1 ;;
 
