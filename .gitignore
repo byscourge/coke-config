@@ -19,3 +19,4 @@
 .node_repl_history
 .autostart
 .local/share/nvim/
+.local/share
