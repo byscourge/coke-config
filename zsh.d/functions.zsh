@@ -441,7 +441,7 @@ su() { ## emulates a semi-root enviroment with shell(2000) priveleges via shizuk
     fi
   }
 
-ldd.IsInstalled() {
+local ldd.IsInstalled() {
   if command -v ldd &>/dev/null && [[ -f $bin/ldd || -f ~/.local/bin/ldd ]] then
       :
     else
@@ -463,7 +463,7 @@ ldd.IsInstalled() {
   fi
 }
 
-vim+nano.installed() {
+local vim+nano.installed() {
   local missing=()
 
   if [[ ! -f $libexec/vim/vim ]]; then
@@ -586,7 +586,7 @@ local boot.InstallTree() {
 
   local copyBash() {
     echo "Copying bash to Shell's bin/"
-    shizuku.IsRunning && rish -c "cp /data/data/com.termux/files/usr/bin/bash /data/local/tmp/sh/usr/bin/"
+    shizuku.IsRunning && rish -c "cp /data/data/com.termux/files/usr/bin/bash /data/local/tmp/sh/usr/bin/bash"
   }
 
   local copyBashLibraries() {
@@ -594,8 +594,8 @@ local boot.InstallTree() {
     shizuku.IsRunning && rish -c "cp $(cat /data/data/com.termux/files/usr/tmp/bashLibraries) /data/local/tmp/sh/usr/lib"
   }
 
-  findLibPaths() {
-   ldd.IsInstalled && ldd "$1" 2>/dev/null | awk '/=>/ {print $3}' | grep -v '^$' | tr '\n' ' '
+  local findLibPaths() {
+   ldd.IsInstalled && fflib -s "$1" 2>/dev/null
   }
 
 local runEnviroment() {
@@ -618,11 +618,11 @@ local runEnviroment() {
     exec bash'"
 }
 
-  initEnviroment() {
-    echo "running Init RootFS for Shell"
-    shizuku.IsRunning && rish -c "chmod 755 /data/local/tmp && \
-      mkdir /data/local/tmp/sh 2>/dev/null && \
-      chmod 777 -R /data/local/tmp/sh"
+local initEnviroment() {
+  echo "running Init RootFS for Shell"
+  shizuku.IsRunning && rish -c "chmod 755 /data/local/tmp && \
+    mkdir /data/local/tmp/sh 2>/dev/null && \
+    chmod 777 -R /data/local/tmp/sh"
 }
 
   local linkBashLibraries() {
@@ -646,7 +646,7 @@ local runEnviroment() {
 
   }
 
-  config::LsColors() {
+  local config::LsColors() {
     printf "Configuring ls colors.."
     sleep 0.2
 
@@ -699,12 +699,12 @@ local runEnviroment() {
     config::LsColors} && return 0;} || return 1;
 }
 
-  already:Installed() {
+  local already:Installed() {
 
     shizuku.IsRunning || return 1
 
     [[ -d /data/local/tmp/sh ]] || return 255
-
+    dlt=/data/local/tmp/sh
     shellDirs=(
       $dlt/usr/share/terminfo
       $dlt/usr
@@ -767,11 +767,11 @@ local runEnviroment() {
     return 0;
   }
 
-  changeTermuxLibexecPerms() {
+  local changeTermuxLibexecPerms() {
     chmod "$1" -R $libexec
   }
 
-  openTermux() {
+  local openTermux() {
     info "Opening termux's fs..\n"
     changeTermuxRoot 755
     changeTermuxSharePerms 755
@@ -779,7 +779,7 @@ local runEnviroment() {
     changeTermuxLibexecPerms 755
   }
 
-  closeTermux() {
+  local closeTermux() {
     info "Closing termux's fs..\n"
     changeTermuxRoot 750
     changeTermuxSharePerms 750
@@ -787,7 +787,7 @@ local runEnviroment() {
     changeTermuxLibexecPerms 750
   }
 
-  openTermuxBackups() {
+  local openTermuxBackups() {
     [[ -d $PREFIX/ext_baks ]] || return 0
 
     info "Opening termux's external backup location..\n"
@@ -795,7 +795,7 @@ local runEnviroment() {
     chmod 755 -R $PREFIX/ext_baks
   }
 
-  closeTermuxBackups() {
+  local closeTermuxBackups() {
     [[ -d $PREFIX/ext_baks ]] || return 0
 
     info "Closing termux's external backup location..\n"
@@ -803,7 +803,7 @@ local runEnviroment() {
     chmod 750 -R $PREFIX/ext_baks
   }
 
-  deleteTermuxBackups() {
+  local deleteTermuxBackups() {
     [[ -d $PREFIX/ext_baks ]] || return 0
 
     warn "Are you sure? this will delete the backups you made of the shell config.\n(if you did not create any then {do not worry, this wont delete anything.})\n[y/n] "
@@ -812,7 +812,7 @@ local runEnviroment() {
     n|N|*) err "\nAbort.\n" ;; esac
   }
 
-  openShell() {
+  local openShell() {
 
   [[ -d /data/local/tmp/sh ]] && \
     info "Opening shell's fs permissions..\n"
@@ -820,13 +820,13 @@ local runEnviroment() {
     ok "Success!\n"
   }
 
-  closeShell() {
+  local closeShell() {
     info "Closing shell's fs permissions..\n"
     changeShellRoot 750 1>/dev/null && \
     ok "Success!\n"
   }
 
-  boot.Init+Validation() {
+  local boot.Init+Validation() {
 
     if [[ -d /data/local/tmp/sh ]]; then
       dlt=/data/local/tmp/sh
@@ -978,7 +978,7 @@ local runEnviroment() {
       done
   }
 
-fix::bash.bashrc\\ENOPERM() {
+local fix::bash.bashrc\\ENOPERM() {
   ct=/data/data/com.termux
   printf "\nFixing perm errors on login..\n"
   {chmod 755 $ct $ct/files/ $ct/files/usr/ $ct/files/usr/etc $ct/files/usr/etc/bash.bashrc} && return 0;
@@ -1055,7 +1055,7 @@ if [[ -z "$1" ]]; then
     read -r reply
     case "$reply" in
       y | Y)
-        boot.Init+Validation
+        boot.Install && boot.Init+Validation
         ;;
       *)
         info "Abort.\n"
@@ -1183,7 +1183,10 @@ return 0
 
     --sudo-test) already:Installed && return 0 ;; # scripting purposes
     
+    --quick-run-no-validation) runEnviroment ;;
+
     *) err "Invalid option: \"$1\"; run su -h to see valid flags.\n"; return 1 ;;
+    
 
   esac
  fi
