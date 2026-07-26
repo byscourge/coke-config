@@ -9,6 +9,5 @@ the main shell configuration (zsh/zshell) is split into 11 seperate configuratio
 ------------------------------------------
 
 ## extremely reccomended android apps to have before using coke-config:
-1. [Shizuku](https://github.com/RikkaApps/Shizuku)
-1.5. [alternative, more actively maintained Shizuku fork](https://github.com/thedjchi/Shizuku)
+1. [Shizuku](https://github.com/RikkaApps/Shizuku), ---- [alternative, more actively maintained Shizuku fork](https://github.com/thedjchi/Shizuku)
 2. [Unexpected Keyboard](https://github.com/Julow/Unexpected-Keyboard)
