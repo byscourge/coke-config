@@ -395,7 +395,3 @@ alias tv='t $ct/files/usr/var' # ts looks cool so y not
 alias tt='or' #timetable
 alias youtube-dl='yt-dlp'
 alias pingole='ping google.com'
-alias suu='su --quick-run-no-validation'
-alias qsu='suu'
-alias asu='suu'
-alias fsu='suu'

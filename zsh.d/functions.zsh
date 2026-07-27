@@ -1132,6 +1132,8 @@ pseudo SuperUser via shizuku on termux
 
       -h/--help [Show this help screen]
 
+      fsu: [a command rather than a config, use this if you need a fast login and know you have the su enviroment properly installed]
+
 Base: rish [~/.local/bin/rish], shizuku's default shell
 EOF
 return 0
@@ -1247,8 +1249,8 @@ so() {
   fi
 }
 
-ng() { ## nvim/neovim glob
-  nvim "$@"*
+fsu() {
+  su --quick-run-no-validation
 }
 
 pa() {
