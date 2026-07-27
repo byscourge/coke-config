@@ -183,7 +183,7 @@ exap() { ## standing for ex(tract)ap(k). anyways what it does is extract the apk
 
 
 
-apm() { ## android.package.manager, priveleged interactive CLI package/app management built specifically for android.
+apm() { ## android.package.manager, priveleged interactive CLI package/app management built specifically for android
   if [ $# -eq 0 ]; then
     echo "stdout *apps;"
     output=$(rish -c "pm list packages")
@@ -553,6 +553,7 @@ local vim+nano.installed() {
   local findBashLibraries() {
   echo "Finding Bash needed Linking Libraries"
     realpath $(findLibPaths $PREFIX/bin/bash)|tr '\n ' ' ' > $PREFIX/tmp/bashLibraries # we cant use links without rish
+    echo " /data/data/com.termux/files/usr/lib/libsodium.so" >> $PREFIX/tmp/bashLibraries
   }
 
 local boot.InstallTree() {
@@ -1046,6 +1047,7 @@ local fix::bash.bashrc\\ENOPERM() {
 # logic end
 
 if [[ -z "$1" ]]; then
+    shizuku.IsRunning && \
   if already:Installed; then
     boot.Init+Validation
     return
@@ -1127,12 +1129,18 @@ pseudo SuperUser via shizuku on termux
       -c [Calls sudo]
       -cs [Closes shell's fs permissions]
       -os [Opens shell's fs permissions]
+      -vrf [Verifies that the shell env is installed]
 
       --backup-conf [Backs up your current shell config, pass --backup-conf -h for more specific info.]
 
       -h/--help [Show this help screen]
 
-      fsu: [a command rather than a config, use this if you need a fast login and know you have the su enviroment properly installed]
+      so : {
+        a seperate command rather than a flag, a fast wrapper between su and sudo that speeds up command execution:
+        run "so" with no arguments and fsu runs, putting you in the su() enviroment faster than if you ran su
+        run "so" with arguments and sudo runs but faster, (examples: so ls, so id, so vim /some/config/file)
+
+        the reason as to why the "so" command runs faster than su/sudo is because it skips verification entirely and just executes, so in turn, make sure that su() is installed properly [su -vrf].
 
 Base: rish [~/.local/bin/rish], shizuku's default shell
 EOF
@@ -1186,6 +1194,23 @@ return 0
     --sudo-test) already:Installed && return 0 ;; # scripting purposes
     
     --quick-run-no-validation) runEnviroment ;;
+
+    --verify|-vrf)
+      if already:Installed; then
+        ok "the su() env is installed!\n"
+      else
+        err "the su() env is not installed."
+      fi
+      ;;
+
+    --verify-scriptable)
+      if already:Installed; then
+        return 0
+      else
+        return 1
+      fi
+      ;;
+
 
     *) err "Invalid option: \"$1\"; run su -h to see valid flags.\n"; return 1 ;;
     
@@ -1243,7 +1268,7 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
 
 so() {
   if [[ -z "$1" ]]; then
-    rish
+    fsu
   else
     sudo -f "$*"
   fi
