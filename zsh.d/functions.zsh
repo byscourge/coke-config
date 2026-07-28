@@ -553,6 +553,7 @@ local vim+nano.installed() {
   local findBashLibraries() {
   echo "Finding Bash needed Linking Libraries"
     realpath $(findLibPaths $PREFIX/bin/bash)|tr '\n ' ' ' > $PREFIX/tmp/bashLibraries # we cant use links without rish
+    vim+nano.installed && \
     echo " /data/data/com.termux/files/usr/lib/libsodium.so" >> $PREFIX/tmp/bashLibraries
   }
 
