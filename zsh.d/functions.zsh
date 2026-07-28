@@ -1198,8 +1198,10 @@ return 0
     --verify|-vrf)
       if already:Installed; then
         ok "the su() env is installed!\n"
+        return 0
       else
         err "the su() env is not installed."
+        return 1
       fi
       ;;
 
