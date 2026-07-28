@@ -5,7 +5,9 @@ if [[ "$OSTYPE" == "linux-android" ]]; then
 # built for termux on android, not linux or any other os/terminal
 # yes, some components are ai generated (STRICLY functions (just a few, i would say around 4.)), but its not 100% ai generated. when i cant figure something out i ask ai for help, and if it takes me over 2 weeks i'll just let it solve the problem and ill build ontop of it. nothing here is PURELY ai generated as i always code the base+concept first, with that said, 90% of functions are coded only by me. nothing else besides a few functions are ai generated.
 
-ZSHRC_START_TIME=$(date +%s%N) # timer to count how long zsh takes to load
+zmodload zsh/datetime
+
+ZSHRC_START_TIME=$EPOCHREALTIME
 
 source ~/zsh.d/exports.zsh # env vars
 
@@ -38,14 +40,12 @@ ZSH_HIGHLIGHT_STYLES[alias]='fg=183'
 ZSH_HIGHLIGHT_STYLES[function]='fg=183'
 ZSH_HIGHLIGHT_STYLES[path]='fg=135'
 
-ZSHRC_END_TIME=$(date +%s%N) # timer end
-ZSHRC_ELAPSED_MS=$(( (ZSHRC_END_TIME - ZSHRC_START_TIME) / 1000000 )) # how long zsh took to load in ms
-pf "ZShell took [${ZSHRC_ELAPSED_MS}ms] to load.\n" # prints to buffer
+ZSHRC_END_TIME=$EPOCHREALTIME
+printf -v ZSHRC_ELAPSED_MS '%.0f' $(( (ZSHRC_END_TIME - ZSHRC_START_TIME) * 1000 ))
+pf "ZShell took [${ZSHRC_ELAPSED_MS}ms] to load.\n"
 
 source ~/zsh.d/.print.pkg.version # prints your pkg managers version
 
-
-# the duplicates are intentional.
 
 else
   err "Uh-Oh! critical: OS Type is not android\n"

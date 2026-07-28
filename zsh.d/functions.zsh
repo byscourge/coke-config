@@ -1442,19 +1442,6 @@ hmaf() { # "how many functions (?)"
   fi
 }
 
-hmap() { # "how many plugins (?)"
-  # we'll use a different approach on this one compared to hmaf/hmal
-  local arg1="$1"
-  local plugin_count=$(("$(fz -N plug|wcl)"-2))
-  if [[ -z "$arg1" ]]; then
-    pf "you have $plugin_count plugins in your \$(~/zsh.d/plugins.zsh)! \n"
-  elif [[ "$arg1" == "-s" ]]; then
-    pf "$plugin_count"
-  else
-    pf "you have $plugin_count plugins in your \$(~/zsh.d/plugins.zsh)! \n"
-  fi
-}
-
 fbin() { # find.binary
   find $bin -iname "$1"
 }
