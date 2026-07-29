@@ -1,29 +1,5 @@
 # some functions and aliases rely on Shizuku (https://github.com/RikkaApps/Shizuku) for priveleged actions, for the best experience i personally reccomend you install it
 
-critical() {
-  printf "\033[38;2;255;0;0m$*\033[0m" >&2; return 255
-}
-
-err() {
-  printf "\033[31m$*\033[0m" >&2; return 1
-}
-
-warn() {
-  printf "\033[38;5;208m$*\033[0m" >&2; return 1
-}
-
-pf() {
-  printf "$*"
-}
-
-ok() {
-  printf "\033[92m$*\033[0m"; return 0
-}
-
-info() {
-  printf "\033[38;2;0;255;255m$*\033[0m";
-}
-
 rish() {
   # rish is a way to interact with LADB (local adb shell/uid 2000) via shizuku. ## https://github.com/RikkaApps/Shizuku
   sh /data/data/com.termux/files/home/.local/bin/rish "$@"
@@ -297,7 +273,7 @@ else
 fi
 }
 
-fz() { ## finds stuff in your zsh (ZShell) config ( ~/zsh.d/ )
+fz() { ## finds patterns in your ZSH config ( ~/zsh.d/ )
   local arg1="$1"
   if [[ -z "$arg1" ]]; then
     err "Purpose: finding specific configurations in the files from ~/zsh.d/\nNoOp, Usage: [fz [a/al/f/un/z/uf/e/h/k/pa/p/t]]\n\nExamples: fz al 'alias somealias=', to find an alias named somealias in ~/zsh.d/aliases.zsh.\n\n"
@@ -310,44 +286,44 @@ fz() { ## finds stuff in your zsh (ZShell) config ( ~/zsh.d/ )
     
     case "$file" in
       f|fu|fun|func|function|functions)
-        ff -N ~/zsh.d/functions.zsh "$regex"
+        ff -N $ZDIR/functions.zsh "$regex"
       ;;
       al|alias|aliases)
-        ff -N ~/zsh.d/aliases.zsh "$regex"
+        ff -N $ZDIR/aliases.zsh "$regex"
       ;;
       a|at|au|auto|startup|autostart|ast)
-        ff -N ~/zsh.d/autostart.zsh "$regex"
+        ff -N $ZDIR/autostart.zsh "$regex"
       ;;
       e|ex|exp|exports)
-        ff -N ~/zsh.d/exports.zsh "$regex"
+        ff -N $ZDIR/exports.zsh "$regex"
       ;;
       h|ho|hook|hooks)
-        ff -N ~/zsh.d/hooks.zsh "$regex"
+        ff -N $ZDIR/hooks.zsh "$regex"
       ;;
       k|key|ky|binds|keybinds|keybind)
-        ff -N ~/zsh.d/keybinds.zsh "$regex"
+        ff -N $ZDIR/keybinds.zsh "$regex"
       ;;
       pkg|pcheck|pgc|pack|package|pa)
-        ff -N ~/zsh.d/pkgchecks.zsh "$regex"
+        ff -N $ZDIR/pkgchecks.zsh "$regex"
       ;;
       p|pl|plug|plugins|plugin)
-        ff -N ~/zsh.d/plugins.zsh "$regex"
+        ff -N $ZDIR/plugins.zsh "$regex"
       ;;
       t|th|theme|themes)
-        ff -N ~/zsh.d/themes.zsh "$regex"
+        ff -N $ZDIR/themes.zsh "$regex"
       ;;
       un|una|unal|unalias|unaliases)
-        ff -N ~/zsh.d/unaliases.zsh "$regex"
+        ff -N $ZDIR/unaliases.zsh "$regex"
       ;;
       unf|unfunc|unfunctions)
-        ff -N ~/zsh.d/unfunctions.zsh "$regex"
+        ff -N $ZDIR/unfunctions.zsh "$regex"
      ;;
       z|zsh|zs|zshrc)
         ff -N ~/.zshrc "$regex"
       ;;
      all)
        local every_file;
-       for every_file in ~/zsh.d/*; do
+       for every_file in $ZDIR/*; do
          if [[ -z "$regex" ]]; then
            ff -N "$every_file"
          else
@@ -366,44 +342,44 @@ fz() { ## finds stuff in your zsh (ZShell) config ( ~/zsh.d/ )
     
     case "$arg1" in
       f|fu|fun|func|functions)
-        ff ~/zsh.d/functions.zsh "$argv"
+        ff $ZDIR/functions.zsh "$argv"
       ;;
       al|alias|aliases)
-        ff ~/zsh.d/aliases.zsh "$argv"
+        ff $ZDIR/aliases.zsh "$argv"
       ;;
       a|at|au|auto|startup|autostart|ast)
-        ff ~/zsh.d/autostart.zsh "$argv"
+        ff $ZDIR/autostart.zsh "$argv"
       ;;
       e|ex|exp|exports)
-        ff ~/zsh.d/exports.zsh "$argv"
+        ff $ZDIR/exports.zsh "$argv"
       ;;
       h|ho|hook|hooks)
-        ff ~/zsh.d/hooks.zsh "$argv"
+        ff $ZDIR/hooks.zsh "$argv"
       ;;
       k|key|ky|binds|keybinds|keybind)
-        ff ~/zsh.d/keybinds.zsh "$argv"
+        ff $ZDIR/keybinds.zsh "$argv"
       ;;
       pkg|pcheck|pgc|pack|package|pa)
-        ff ~/zsh.d/pkgchecks.zsh "$argv"
+        ff $ZDIR/pkgchecks.zsh "$argv"
       ;;
       p|pl|plug|plugins|plugin)
-        ff ~/zsh.d/plugins.zsh "$argv"
+        ff $ZDIR/plugins.zsh "$argv"
       ;;
       t|th|theme|themes)
-        ff ~/zsh.d/themes.zsh "$argv"
+        ff $ZDIR/themes.zsh "$argv"
       ;;
       un|una|unal|unalias|unaliases)
-        ff ~/zsh.d/unaliases.zsh "$argv"
+        ff $ZDIR/unaliases.zsh "$argv"
       ;;
       uf|unf|unfun|unfunc|unfu|unfunctions)
-        ff ~/zsh.d/unfunctions.zsh "$argv"
+        ff $ZDIR/unfunctions.zsh "$argv"
      ;;
       z|zsh|zs|zshrc)
         ff ~/.zshrc "$argv"
       ;;
      all)
        local every_file;
-       for every_file in ~/zsh.d/*; do
+       for every_file in $ZDIR/*; do
          if [[ -z "$argv" ]]; then
            ff "$every_file"
          else
@@ -1465,37 +1441,37 @@ nd() {
 
   case "$file_opt" in
   f|fu|fun|func|functions)
-  $EDITOR ~/zsh.d/functions.zsh
+  $EDITOR $ZDIR/functions.zsh
   ;;
   al|alias|aliases)
-  $EDITOR ~/zsh.d/aliases.zsh
+  $EDITOR $ZDIR/aliases.zsh
   ;;
   a|at|au|auto|startup|autostart|ast)
-  $EDITOR ~/zsh.d/autostart.zsh
+  $EDITOR $ZDIR/autostart.zsh
   ;;
   e|ex|exp|exports)
-  $EDITOR ~/zsh.d/exports.zsh
+  $EDITOR $ZDIR/exports.zsh
   ;;
   h|ho|hook|hooks)
-  $EDITOR ~/zsh.d/hooks.zsh
+  $EDITOR $ZDIR/hooks.zsh
   ;;
   k|key|ky|binds|keybinds|keybind)
-  $EDITOR ~/zsh.d/keybinds.zsh
+  $EDITOR $ZDIR/keybinds.zsh
   ;;
   pkg|pcheck|pgc|pack|package|pa)
-  $EDITOR ~/zsh.d/pkgchecks.zsh
+  $EDITOR $ZDIR/pkgchecks.zsh
   ;;
   p|pl|plug|plugins|plugin)
-  $EDITOR ~/zsh.d/plugins.zsh
+  $EDITOR $ZDIR/plugins.zsh
   ;;
   t|th|theme|themes)
-  $EDITOR ~/zsh.d/themes.zsh
+  $EDITOR $ZDIR/themes.zsh
   ;;
   un|una|unal|unalias|unaliases)
-  $EDITOR ~/zsh.d/unaliases.zsh
+  $EDITOR $ZDIR/unaliases.zsh
   ;;
   uf|unf|unfun|unfunc|unfu|unfunctions)
-  $EDITOR ~/zsh.d/unfunctions.zsh
+  $EDITOR $ZDIR/unfunctions.zsh
   ;;
   z|zsh|zs|zshrc)
   $EDITOR ~/.zshrc
@@ -1511,7 +1487,7 @@ lw() {
 }
 
 lzsh() {
-  cat ~/zsh.d/*|wcl
+  cat $ZDIR/* | wcl
 }
 
 hmpkg() {

@@ -1,39 +1,73 @@
 # built on zsh 5.9.1
+critical() {
+  printf "\033[38;2;255;0;0m$*\033[0m" >&2; return 255
+}
+
+err() {
+  printf "\033[31m$*\033[0m" >&2; return 1
+}
+
+warn() {
+  printf "\033[38;5;208m$*\033[0m" >&2; return 1
+}
+
+pf() {
+  printf "$*"
+}
+
+ok() {
+  printf "\033[92m$*\033[0m"; return 0
+}
+
+info() {
+  printf "\033[38;2;0;255;255m$*\033[0m";
+}
+
+# --------------------------------------------------------------------
 
 if [[ "$OSTYPE" == "linux-android" ]]; then
 
-# built for termux on android, not linux or any other os/terminal
-# yes, some components are ai generated (STRICLY functions (just a few, i would say around 4.)), but its not 100% ai generated. when i cant figure something out i ask ai for help, and if it takes me over 2 weeks i'll just let it solve the problem and ill build ontop of it. nothing here is PURELY ai generated as i always code the base+concept first, with that said, 90% of functions are coded only by me. nothing else besides a few functions are ai generated.
+ZDIR="$HOME/zsh.d/"
+
+izload() {
+  local mod="$1"
+  if [[ -f "$mod" ]]; then
+    source "$mod"
+    return 0
+  else
+    critical "Uh-Oh! File could not be loaded: $mod"
+    return 1
+  fi
+}
+
 
 zmodload zsh/datetime
 
 ZSHRC_START_TIME=$EPOCHREALTIME
 
-source ~/zsh.d/exports.zsh # env vars
+izload $ZDIR/exports.zsh # Enviroment variables
 
-source ~/zsh.d/plugins.zsh # zsh plugins, eg git fzf etc
+izload $ZDIR/hooks.zsh # Preloads
 
-source ~/zsh.d/themes.zsh # themes, eg powerlevel10k
+izload $ZDIR/plugins.zsh # ZSH Plugins
 
-source ~/zsh.d/unfunctions.zsh # functions to be forgotten
+izload $ZDIR/themes.zsh # ZSH Themes
 
-source ~/zsh.d/hooks.zsh # scripts that hook onto zsh, eg zoxide
+izload $ZDIR/unfunctions.zsh # Functions to be erased
 
-source ~/zsh.d/aliases.zsh # aliases
+izload $ZDIR/aliases.zsh # Aliases
 
-source ~/zsh.d/functions.zsh # functions
+izload $ZDIR/functions.zsh # Functions
 
-source ~/zsh.d/autostart.zsh # things that run beforehand, eg sourcing .p10k.zsh, or misc like neofetch
+izload $ZDIR/unaliases.zsh # Aliases to be erased
 
-source ~/zsh.d/unaliases.zsh # aliases to be forgotten
+izload $ZDIR/aliases.zsh # Intentional duplicate
 
-source ~/zsh.d/aliases.zsh # aliases duplicate, "why source aliases twice?", well, one before functions so the functions dont break, and the second one after it so ohmyzsh doesnt override them
+izload $ZDIR/keybinds.zsh # Keybindings
 
-source ~/zsh.d/keybinds.zsh # keybinds
+izload $ZDIR/exports.zsh # Intentional duplicate
 
-source ~/zsh.d/exports.zsh # env vars duplicate to ensure not overriden
-
-source ~/zsh.d/pkgchecks.zsh # check if user has apt or pacman for scripts
+izload $ZDIR/pkgchecks.zsh # Script support: confirm whether user has apt or pacman
 
 ZSH_HIGHLIGHT_STYLES[command]='fg=183'
 ZSH_HIGHLIGHT_STYLES[alias]='fg=183'
@@ -42,12 +76,13 @@ ZSH_HIGHLIGHT_STYLES[path]='fg=135'
 
 ZSHRC_END_TIME=$EPOCHREALTIME
 printf -v ZSHRC_ELAPSED_MS '%.0f' $(( (ZSHRC_END_TIME - ZSHRC_START_TIME) * 1000 ))
-pf "ZShell took [${ZSHRC_ELAPSED_MS}ms] to load.\n"
+pf "Zsh took [${ZSHRC_ELAPSED_MS}ms] to load.\n"
 
-source ~/zsh.d/.print.pkg.version # prints your pkg managers version
+izload $ZDIR/.print.pkg.version # Print package manager version
 
+izload $ZDIR/autostart.zsh # Autostart
 
 else
-  err "Uh-Oh! critical: OS Type is not android\n"
+  err "Uh-Oh! OS Type is not android\n"
   return 255;
 fi
