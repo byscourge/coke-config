@@ -193,4 +193,5 @@ function omz_urldecode {
 
   echo -E "$decoded"
 }
+echo "\n"
 se
