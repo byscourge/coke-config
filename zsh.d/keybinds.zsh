@@ -107,7 +107,7 @@ bindkey -M emacs '^[[3;5~' kill-word
 bindkey -M viins '^[[3;5~' kill-word
 bindkey -M vicmd '^[[3;5~' kill-word
 
-# [Ctrl-Delete] - delete whole word
+# [Ctrl-Backspace] - delete whole word
 bindkey -M emacs '^H' backward-kill-word
 bindkey -M viins '^H' backward-kill-word
 bindkey -M vicmd '^H' backward-kill-word
