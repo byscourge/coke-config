@@ -140,7 +140,7 @@ zg() { ## z glob
 }
 
 
-exap() { ## standing for ex(tract)ap(k). anyways what it does is extract the apk from an app e.g exap com.testapp, and it copies its apk to ./com.testapp.apk
+exap() { # simple apk extraction function
   local pacname pacpath target
   pacname="$1"
   target="$2"
@@ -149,9 +149,11 @@ exap() { ## standing for ex(tract)ap(k). anyways what it does is extract the apk
   pacpath=${pacpath:8}
 
   if [[ -z "$target" ]]; then
-    cp "$pacpath" "./$pacname.apk"
+    cp "$pacpath" "./$pacname.apk" && \
+    ok "Success! ${CYAN}$pacname${GREEN} copied to ${CYAN}./$pacname.apk${NC}\n"
   else
-    cp "$pacpath" "$target/$pacname.apk"
+    cp "$pacpath" "$target.apk" && \
+    ok "Success! ${CYAN}$pacname${GREEN} copied to ${CYAN}$target.apk$NC\n"
   fi
 }
 
@@ -159,12 +161,26 @@ exap() { ## standing for ex(tract)ap(k). anyways what it does is extract the apk
 
 
 
-apm() { ## android.package.manager, priveleged interactive CLI package/app management built specifically for android
-  if [ $# -eq 0 ]; then
-    echo "stdout *apps;"
+apm() { # simple android package manager
+  if [[ $# -eq 0 ]]; then
+    info "Listing all installed apps..\n"
     output=$(rish -c "pm list packages")
+  elif [[ "$1" == "-h" || "$1" == "--h" ]]; then
+    printf "
+
+    ${BLUE}APM: Simple android CLI app manager${NC}
+
+    ${WHITE}Available commands:${NC}
+
+    ${BLUE}open${NC}: Opens selected app
+    ${BLUE}info${NC}: Opens the settings page of selected app
+    ${BLUE}kill${NC}: Force stops selected app
+    ${BLUE}extract${NC}: Copies selected app's APK file to your current directory
+    ${BLUE}pm uninstall${NC}: Permanently deletes selected app from device
+    \n"
+    return 0
   else
-    echo "REGEX:: $*;"
+    info "Searching for: $*\n"
     output=""
     for term in "$@"; do
       part=$(rish -c "pm list packages | grep -i \"$term\"")
@@ -174,8 +190,8 @@ apm() { ## android.package.manager, priveleged interactive CLI package/app manag
 
   output=$(echo "$output" | grep -v '^$' | sort -u)
 
-  if [ -z "$output" ]; then
-    err "stderr: Matching REGEX=NULL;\n"
+  if [[ -z "$output" ]]; then
+    err "No packages matched the search terms.\n"
     return 1
   fi
 
@@ -187,82 +203,73 @@ apm() { ## android.package.manager, priveleged interactive CLI package/app manag
     i=$((i + 1))
   done
 
-  echo -n "stdin INT (1-$((i - 1))): "
-  read num
+  info "Input number of package (1-$((i - 1))): "
+  read -r num
 
   if ! echo "$num" | grep -qE '^[0-9]+$'; then
-    err "stderr: Invalid INT (out of bounds);\n"
+    err "Invalid number given (out of bounds)\n"
     return 1
   fi
-  if [ "$num" -lt 1 ] || [ "$num" -ge "$i" ]; then
-    err "stderr: Invalid INT (out of bounds);\n"
+  if [[ "$num" -lt 1 ]] || [[ "$num" -ge "$i" ]]; then
+    err "Invalid number given (out of bounds)\n"
     return 1
   fi
 
   selected=$(echo "$pkgs" | sed -n "${num}p")
 
-  echo "stdin: $selected"
+  w_info "Selected package: $selected\n"
 
-  echo -n "exec stdin::$ "
-  read cmd
+  info "\napm --h for a list of commands.\nExecute command: "
+  read -r cmd
 
-  if [ "$cmd" = "mop" ]; then
+  case "$cmd" in
+    
+    mop|open|monkey-open)
     cmd="monkey -p $selected -c android.intent.category.LAUNCHER 1"
-    echo "sh::rish -c \"$cmd\""
+    w_info "Executed command: rish -c \"$cmd\"\n"
     rish -c "$cmd"
-    return 0
+    ;;
 
-  elif [ "$cmd" = "kill" ]; then
+    kill|stop|force-stop)
     cmd="am force-stop $selected"
-    echo "sh::rich -c \"$cmd\""
+    w_info "Executed command: rish -c \"$cmd\"\n"
     rish -c "$cmd"
-    return 0
+    ;;
 
-elif [ "$cmd" = "exap" ]; then
-    echo "extracting stdin:: $selected..."
+    exap|extract|extract-apk|apk)
+    c_info "Extracting apk of: $selected\n"
 
-    # get the APK path (first APK if multiple)
     apkpath=$(rish -c "pm path $selected" | sed 's/^package://' | head -n1)
     apkpath=${apkpath#file://}
 
-    if [ -z "$apkpath" ]; then
-        err "stderr: $selected.apk == NULL\n"
+    if [[ -z "$apkpath" ]]; then
+        err "Unable to find the APK Path of: $selected.apk\n"
         return 1
     fi
 
-    # copy to current dir as selected.apk
     cp "$apkpath" "./$selected.apk" 2>/dev/null
 
     if [ $? -eq 0 ]; then
-        echo "Returncode=0! PATH:: [./$selected.apk]"
+        ok "APK extraction success! path: [./$selected.apk]\n"
     else
-        err "stderr: Extraction Returncode!=0;\n"
-        echo "DEBUG: PATH='$apkpath'"
+        err "APK extraction failed.\n"
+        info "Debugging info: path of failed APK was \'$apkpath\' \n"
         ls -l "$apkpath" 2>/dev/null
         return 1
     fi
-
     return 0
-  elif [ "$cmd" = "inf" ]; then
-  am start -a android.settings.APPLICATION_DETAILS_SETTINGS -d package:$selected
-  elif [ "$cmd" = "info" ]; then
-    am start -a android.settings.APPLICATION_DETAILS_SETTINGS -d package:$selected
-fi
+    ;;
 
-  case "$cmd" in
-    monkey*)
-      # remove existing -p arg if any
-      cmd=$(echo "$cmd" | sed -E 's/ -p [^ ]+//g')
-      # insert -p right after monkey
-      cmd=$(echo "$cmd" | sed -E "s/^(monkey)/\\1 -p $selected/")
-      echo "sh::rish -c \"$cmd\""
-      rish -c "$cmd"
-      ;;
+    info|app-info|inf|in)
+    info "Opening settings page of: $selected\n"
+    am start -a android.settings.APPLICATION_DETAILS_SETTINGS -d package:$selected
+    ;;
+
     *)
-      echo "sh::rish -c \"$cmd $selected\""
+      info "Executing command: $cmd $selected\n"
       rish -c "$cmd $selected"
-      ;;
-  esac
+    ;;
+esac
 }
 
 pen() { ## print enviroment variables and find patterns in them
@@ -276,9 +283,29 @@ fi
 fz() { ## finds patterns in your ZSH config ( ~/zsh.d/ )
   local arg1="$1"
   if [[ -z "$arg1" ]]; then
-    err "Purpose: finding specific configurations in the files from ~/zsh.d/\nNoOp, Usage: [fz [a/al/f/un/z/uf/e/h/k/pa/p/t]]\n\nExamples: fz al 'alias somealias=', to find an alias named somealias in ~/zsh.d/aliases.zsh.\n\n"
+    err "No operation given, pass -h for help.\n\n"
   elif [[ "$arg1" == "-h" ]]; then
-    pf "Purpose: finding specific configurations in the files from ~/zsh.d/\nUsage: [fz [a/al/f/un/z/uf/e/h/k/pa/p/t]]\n\nExamples: fz al 'alias somealias=', to find an alias named somealias in ~/zsh.d/aliases.zsh.\n\n"
+    pf "
+    Find patterns in ~/zsh.d files
+    Usage:
+
+    ${BLUE}fz func \"example\"${NC} find a pattern in functions
+    ${BLUE}fz al \"example\"${NC} find a pattern in aliases
+    ${BLUE}fz ast \"example\"${NC} find a pattern in autostart
+    ${BLUE}fz exp \"example\"${NC} find a pattern in exports
+    ${BLUE}fz ho \"example\"${NC} find a pattern in hooks
+    ${BLUE}fz key \"example\"${NC} find a pattern in keybinds
+    ${BLUE}fz pkg \"example\"${NC} find a pattern in pkgchecks
+    ${BLUE}fz pl \"example\"${NC} find a pattern in plugins
+    ${BLUE}fz th \"example\"${NC} find a pattern in themes
+    ${BLUE}fz una \"example\"${NC} find a pattern in unaliases
+    ${BLUE}fz unf \"example\"${NC} find a pattern in unfunctions
+    ${BLUE}fz zsh \"example\"${NC} find a pattern in zshrc
+    ${BLUE}fz all \"example\"${NC} find a pattern in all zsh configs
+
+
+    ${BLUE}fz -N file example ${WHITE}to find patterns without line numbers, or fz -N file to quickly view the file contents as if ${CYAN}cat ${WHITE}was used.${NC}
+    \n"
   elif [[ "$arg1" == "-N" ]]; ## if you use {fz -N somefile somepattern} you'll need to put the pattern in quotes when using -N, as it doesnt use shift/all args and instead uses a multiple argument approach (flag (-N), file, pattern) unlike if you dont use -N which uses an infinite argument approach (file, the rest of this here whether you use spaces or other stuff is treated as a single string.) 
   then
     local file="$2"
@@ -332,7 +359,7 @@ fz() { ## finds patterns in your ZSH config ( ~/zsh.d/ )
        done
        ;;
      *)
-       err "Invalid category \"$file\", pass -h to show the help screen, otherwise add the category yourself.\n"
+       err "Invalid category \"$file\", pass -h to show help screen.\n"
        return 1
        ;;
     esac
@@ -388,7 +415,7 @@ fz() { ## finds patterns in your ZSH config ( ~/zsh.d/ )
        done
        ;;
      *)
-       err "Invalid category \"$arg1\", pass -h to show the help screen, otherwise add the category yourself.\n"
+       err "Invalid category \"$arg1\", pass -h to show the help screen.\n"
        return 1
        ;;
     esac
@@ -404,13 +431,13 @@ su() { ## emulates a semi-root enviroment with shell(2000) priveleges via shizuk
   if command -v rish &>/dev/null; then
     :
   else
-    critical "Even though this function is made to be used specifically with my dotfiles, which has rish preinstalled, rish doesnt exist.\nBut it's fine, just install rish and if you have shizuku you'll be fine."
+    critical "Even though this function is made to be used specifically with my dotfiles, which has rish preinstalled, rish doesnt exist.\n${BLUE}rish can be manually installed with shizuku, or by copying it from my dotfiles.${NC}\n"
     return 255
   fi
   
   local shizuku.IsRunning() {
     if ! {rish -c "return 0"} then
-      critical "stderr: Critical [Shizuku failed.]; it may not be installed, configured properly, or running; Abort.\n"
+      err "rish failed to run. Shizuku may not be installed, configured properly, or running.\n"
       return 255
     else
       return 0;
@@ -418,10 +445,10 @@ su() { ## emulates a semi-root enviroment with shell(2000) priveleges via shizuk
   }
 
 local ldd.IsInstalled() {
-  if command -v ldd &>/dev/null && [[ -f $bin/ldd || -f ~/.local/bin/ldd ]] then
-      :
+  if [[ -f $PREFIX/bin/ldd ]]; then
+      return 0
     else
-      critical "stderr: Critical [the ldd bin could not be found.]\n"
+      err "The ldd command could not be found.\n"
       info "Installing ldd..\n"
 
       case "$PKG" in
@@ -430,11 +457,16 @@ local ldd.IsInstalled() {
         *) pkg install ldd -y ;;
       esac
 
-    if command -v ldd &>/dev/null && [[ -f $bin/ldd || -f ~/.local/bin/ldd ]] then
+  if [[ -f $PREFIX/bin/ldd ]]; then
       ok "ldd Sucessfully installed!\n"
+      case "$PKG" in
+        apt) apt install binutils -y ;;
+        pacman) pacman -S binutils --noconfirm ;;
+        *) pkg install binutils -y ;;
+      esac
     else
-      critical "stderr: Critical [ldd could not be installed.]\n"
-      return 255
+      critical "ldd could not be installed.\n"
+      return 1
     fi
   fi
 }
@@ -504,37 +536,42 @@ local vim+nano.installed() {
       err "only 1 arg allowed"
       return 1
     else
-      echo "Changing termux fs permissions to $1...\n"
+      info "Changing termux fs permissions to $1...\n"
     chmod "$1" /data/data/com.termux /data/data/com.termux/files/ $PREFIX $PREFIX/etc $PREFIX/etc/bash.bashrc;
     chmod "$1" -R $PREFIX/bin $PREFIX/lib $PREFIX/tmp
     fi
   }
 
   local changeShellRoot() {
-    echo "Changing Shell's fs permissions to $1..."
+    info "Changing Shell's fs permissions to $1...\n"
     shizuku.IsRunning && rish -c "chmod $1 -R /data/local/tmp/sh"
   }
 
   local bootStrapDirectories() {
-    echo "starting Init /data/local/tmp/sh (Shell's fs)..\n"
+    info "starting Init /data/local/tmp/sh (Shell's fs)..\n"
 
     shizuku.IsRunning && rish -c "cd /data/local/tmp/ && \
     mkdir ./sh 2>/dev/null
     
-    echo 'Creating common directories'
+    echo '\033[1m\033[38;2;125;167;205mCreating common directories'
 
     mkdir -p sh/home/ sh/usr/bin/  sh/usr/lib/ sh/etc/  sh/usr/share/terminfo/ sh/usr/libexec/ sh/tmp"
   }
 
+  local findLibPaths() {
+   ldd.IsInstalled && fflib -s "$1" 2>/dev/null
+  }
+
   local findBashLibraries() {
-  echo "Finding Bash needed Linking Libraries"
+  info "Finding Bash needed Linking Libraries\n"
+  ldd.IsInstalled && \
     realpath $(findLibPaths $PREFIX/bin/bash)|tr '\n ' ' ' > $PREFIX/tmp/bashLibraries # we cant use links without rish
     vim+nano.installed && \
     echo " /data/data/com.termux/files/usr/lib/libsodium.so" >> $PREFIX/tmp/bashLibraries
   }
 
 local boot.InstallTree() {
-  if command -v tree &>/dev/null && [[ -f $bin/tree ]]; then
+  if [[ -f $PREFIX/bin/tree ]]; then
     rish -c "cp /data/data/com.termux/files/usr/bin/tree /data/local/tmp/sh/usr/bin/tree" && return 0
   else
     err "tree may not be installed, attempting to install..\n"
@@ -547,33 +584,33 @@ local boot.InstallTree() {
 
     if [[ -f $bin/tree ]]; then
       ok "Tree successfully installed!\n"
+      chmod 755 $PREFIX/bin/
       rish -c "cp /data/data/com.termux/files/usr/bin/tree /data/local/tmp/sh/usr/bin"
     else
-      err "tree could not be installed, skipping :(\n"
+      err "tree could not be installed, skipping\n"
       return 1
     fi
   fi
 
-  if command -v tree &>/dev/null && [[ ! -f /data/local/tmp/sh/usr/bin/tree ]] ; then
-    warn "\n...tree is installed, but was not copied for some reason\n"
+  if [[ ! -f /data/local/tmp/sh/usr/bin/tree ]]; then
+    err "Unable to copy tree"
     info "Retrying...\n"
     openTermux
-    rish -c "cp /data/data/com.termux/files/usr/bin/tree /data/local/tmp/sh/usr/bin" && closeTermux || critical "tree could still not be copied, Abort.\n"
+    rish -c "cp /data/data/com.termux/files/usr/bin/tree /data/local/tmp/sh/usr/bin" && closeTermux
+    if [[ -f /data/local/tmp/sh/usr/bin/tree ]]; then
+      return 0
+    fi
   fi
 }
 
   local copyBash() {
-    echo "Copying bash to Shell's bin/"
+    info "Copying bash to Shell's usr/bin\n"
     shizuku.IsRunning && rish -c "cp /data/data/com.termux/files/usr/bin/bash /data/local/tmp/sh/usr/bin/bash"
   }
 
   local copyBashLibraries() {
-    echo "Copying bash's needed Linking libraries to Shell's lib/"
+    info "Copying bash's needed Linking libraries to Shell's usr/lib\n"
     shizuku.IsRunning && rish -c "cp $(cat /data/data/com.termux/files/usr/tmp/bashLibraries) /data/local/tmp/sh/usr/lib"
-  }
-
-  local findLibPaths() {
-   ldd.IsInstalled && fflib -s "$1" 2>/dev/null
   }
 
 local runEnviroment() {
@@ -597,14 +634,14 @@ local runEnviroment() {
 }
 
 local initEnviroment() {
-  echo "running Init RootFS for Shell"
+  info "Initializing & prepping the Shell filesystem\n"
   shizuku.IsRunning && rish -c "chmod 755 /data/local/tmp && \
     mkdir /data/local/tmp/sh 2>/dev/null && \
     chmod 777 -R /data/local/tmp/sh"
 }
 
   local linkBashLibraries() {
-    echo "linking Bash required Libaries's realPath, to their needed equivalent"
+    info "linking Bash required Libaries's realPath, to their needed equivalent\n"
       shizuku.IsRunning && rish -c " cd /data/local/tmp/sh/usr/lib && \
         cp libreadline.so.* libreadline.so.8
         cp libncursesw.so.* libncursesw.so.6
@@ -615,28 +652,34 @@ local initEnviroment() {
     shizuku.IsRunning && \
 
       if [[ ! -d /data/local/tmp/sh ]] then
-        err "stderr: conf was not installed, could not uninstall it.\n"
+        err "Shell enviroment is not installed, could not uninstall.\n"
         return 1;
       else
-        info "Wiping shell's rootfs...\n"
+        w_info "Wiping shell's rootfs...\n"
         {rish -c "rm -rf /data/local/tmp/sh" && return 0} || return 1;
       fi
 
   }
 
-  local config::LsColors() {
-    printf "Configuring ls colors.."
-    sleep 0.2
+      local config::LsColors() {
+        info "Configuring ls colors..\n"
+        sleep 0.2
 
-    [[ -d /data/local/tmp/sh/home ]] && {rish -c "echo alias ls=\"'ls --color=auto'\" > /data/local/tmp/sh/home/.bashrc" && ok "Success!\n"; return 0 } || return 1;
-  }
+        [[ -d /data/local/tmp/sh/home ]] || return 1
+
+        rish -c "grep -qF \"alias ls='ls --color=auto'\" /data/local/tmp/sh/home/.bashrc 2>/dev/null || echo alias ls=\"'ls --color=auto'\" >> /data/local/tmp/sh/home/.bashrc" && \
+        ok "Success!\n" && return 0 || return 1
+      }
 
   local boot.InstallFiles() {
 
     shizuku.IsRunning && \
 
+    initEnviroment && \
+    bootStrapDirectories && \
     changeTermuxRoot 755 && \
     changeShellRoot 755 && \
+    ldd.IsInstalled && \
     findBashLibraries && \
     copyBash && \
     copyBashLibraries && \
@@ -652,7 +695,7 @@ local initEnviroment() {
 
   local boot.Install() {
 
-      printf "\nStarting Installation."
+      w_info "\nStarting Installation."
     for sleep in {1..6}; do
       sleep 0.2
       printf "."
@@ -664,69 +707,129 @@ local initEnviroment() {
 
     bootStrapDirectories && \
     changeShellRoot 755 && \
-    
+    ldd.IsInstalled && \
     findBashLibraries && \
     copyBash && \
     copyBashLibraries && \
     linkBashLibraries && \
+    config::LsColors && \
     boot.setupTermInfo && \
     boot.InstallTexEd && \
     boot.InstallTree
 
-  } && {{{ok "Success!"; printf " conf Sucessfully installed,"; ok " you may now run \"su\" to login.\n\n";} && \
-    config::LsColors} && return 0;} || return 1;
+      } && {
+          great "Success!"
+          ok " The Shell enviroment was sucessfully installed."
+          ok "\nyou may now run ${BRIGHT_CYAN}\"su\"${GREEN} or ${BRIGHT_CYAN}\"so\"${GREEN} to login.\n\n"
+        } && return 0 || return 1
 }
 
   local already:Installed() {
 
-    shizuku.IsRunning || return 1
+    shizuku.IsRunning || exit 1
 
-    [[ -d /data/local/tmp/sh ]] || return 255
+    [[ -d /data/local/tmp/sh ]] || return 1
     dlt=/data/local/tmp/sh
     shellDirs=(
+      $dlt/tmp
+      $dlt/usr/libexec
       $dlt/usr/share/terminfo
+      $dlt/usr/share/terminfo/a
+      $dlt/usr/share/terminfo/d
+      $dlt/usr/share/terminfo/e
+      $dlt/usr/share/terminfo/f
+      $dlt/usr/share/terminfo/g
+      $dlt/usr/share/terminfo/k
+      $dlt/usr/share/terminfo/l
+      $dlt/usr/share/terminfo/n
+      $dlt/usr/share/terminfo/p
+      $dlt/usr/share/terminfo/r
+      $dlt/usr/share/terminfo/s
+      $dlt/usr/share/terminfo/t
+      $dlt/usr/share/terminfo/v
+      $dlt/usr/share/terminfo/x
       $dlt/usr
       $dlt/home
       $dlt/etc
-      $dlt/tmp
       $dlt/usr/bin
       $dlt/usr/lib
-      $dlt/usr/libexec
       $dlt/usr/share
       $dlt
       )
 
     shellFiles=(     
-      $dlt/usr/bin/bash
+      $dlt/usr/share/terminfo/a/alacritty
+      $dlt/usr/share/terminfo/a/alacritty+common
+      $dlt/usr/share/terminfo/a/alacritty-direct
+      $dlt/usr/share/terminfo/a/ansi
+      $dlt/usr/share/terminfo/d/dtterm
+      $dlt/usr/share/terminfo/d/dumb
+      $dlt/usr/share/terminfo/e/eterm-color
+      $dlt/usr/share/terminfo/f/foot
+      $dlt/usr/share/terminfo/f/foot+base
+      $dlt/usr/share/terminfo/f/foot-direct
+      $dlt/usr/share/terminfo/g/gnome
+      $dlt/usr/share/terminfo/g/gnome-256color
+      $dlt/usr/share/terminfo/k/kitty
+      $dlt/usr/share/terminfo/k/kitty+common
+      $dlt/usr/share/terminfo/k/kitty-direct
+      $dlt/usr/share/terminfo/l/linux
+      $dlt/usr/share/terminfo/n/nsterm
+      $dlt/usr/share/terminfo/p/putty
+      $dlt/usr/share/terminfo/p/putty-256color
+      $dlt/usr/share/terminfo/r/rxvt
+      $dlt/usr/share/terminfo/r/rxvt-256color
+      $dlt/usr/share/terminfo/r/rxvt-unicode
+      $dlt/usr/share/terminfo/r/rxvt-unicode-256color
+      $dlt/usr/share/terminfo/s/screen
+      $dlt/usr/share/terminfo/s/screen-256color
+      $dlt/usr/share/terminfo/s/screen2
+      $dlt/usr/share/terminfo/s/st
+      $dlt/usr/share/terminfo/s/st-256color
+      $dlt/usr/share/terminfo/t/tmux
+      $dlt/usr/share/terminfo/t/tmux-256color
+      $dlt/usr/share/terminfo/v/vt100
+      $dlt/usr/share/terminfo/v/vt102
+      $dlt/usr/share/terminfo/v/vt52
+      $dlt/usr/share/terminfo/x/xterm
+      $dlt/usr/share/terminfo/x/xterm+256color
+      $dlt/usr/share/terminfo/x/xterm-16color
+      $dlt/usr/share/terminfo/x/xterm-256color
+      $dlt/usr/share/terminfo/x/xterm-color
+      $dlt/usr/share/terminfo/x/xterm-kitty
+      $dlt/usr/share/terminfo/x/xterm-new
       $dlt/usr/lib/ld-android.so
       $dlt/usr/lib/libandroid-support.so
       $dlt/usr/lib/libc.so
       $dlt/usr/lib/libdl.so
       $dlt/usr/lib/libiconv.so
-      $dlt/usr/lib/libncursesw.so.6.5
-      $dlt/usr/lib/libreadline.so.8.3
       $dlt/usr/lib/libncursesw.so.6
+      $dlt/usr/lib/libncursesw.so.6.5
       $dlt/usr/lib/libreadline.so.8
+      $dlt/usr/lib/libreadline.so.8.3
+      $dlt/usr/lib/libsodium.so
+      $dlt/usr/bin/bash
+      $dlt/usr/bin/nano
+      $dlt/usr/bin/vim
+      $dlt/usr/bin/vi
+      $dlt/usr/bin/tree
       )
     
       dir=("${shellDirs[@]}")
       file=("${shellFiles[@]}")
 
       for dirs in "${dir[@]}"; do
-        if [[ -d "$dirs" ]]; then
-          :
-        else
+        if [[ ! -d "$dirs" ]]; then
           return 1
         fi
       done
 
         for files in "${file[@]}"; do
-          if [[ -f "$files" ]]; then
-            return 0
-          else
+          if [[ ! -f "$files" ]]; then
             return 1
           fi
         done
+        return 0
   }
 
   local boot.Init() {
@@ -736,11 +839,11 @@ local initEnviroment() {
   }
 
   local revertChanges() {
-    {pf "Changing termux's LocationPermissions to 750 (*rwxr-x---)\n"
+    {info "Changing termux's LocationPermissions to 750 (*rwxr-x---)\n"
     closeTermux
     closeTermuxBackups
     deleteTermuxBackups
-    pf "Removing usr/tmp/bashLibraries\n"
+    info "Removing usr/tmp/bashLibraries\n"
     rm $PREFIX/tmp/bashLibraries 2>/dev/null}
     return 0;
   }
@@ -784,8 +887,8 @@ local initEnviroment() {
   local deleteTermuxBackups() {
     [[ -d $PREFIX/ext_baks ]] || return 0
 
-    warn "Are you sure? this will delete the backups you made of the shell config.\n(if you did not create any then {do not worry, this wont delete anything.})\n[y/n] "
-    local rrr;read rrr; case "$rrr" in
+    warn "Are you sure? this will delete the backups you made of the shell config.\n(if you did not create any then {do not worry, this wont delete anything.})\n[y/N] "
+    local rrr;read -r rrr; case "$rrr" in
     y|Y) rm -rf $PREFIX/ext_baks && ok "Successfully deleted shell backups!\n" ;;
     n|N|*) err "\nAbort.\n" ;; esac
   }
@@ -880,15 +983,16 @@ local initEnviroment() {
       $dlt/usr/share/terminfo/x/xterm-color
       $dlt/usr/share/terminfo/x/xterm-kitty
       $dlt/usr/share/terminfo/x/xterm-new
-      $dlt/usr/lib/libreadline.so.8
       $dlt/usr/lib/ld-android.so
       $dlt/usr/lib/libandroid-support.so
       $dlt/usr/lib/libc.so
       $dlt/usr/lib/libdl.so
       $dlt/usr/lib/libiconv.so
-      $dlt/usr/lib/libncursesw.so.6.5
-      $dlt/usr/lib/libreadline.so.8.3
       $dlt/usr/lib/libncursesw.so.6
+      $dlt/usr/lib/libncursesw.so.6.5
+      $dlt/usr/lib/libreadline.so.8
+      $dlt/usr/lib/libreadline.so.8.3
+      $dlt/usr/lib/libsodium.so
       $dlt/usr/bin/bash
       $dlt/usr/bin/nano
       $dlt/usr/bin/vim
@@ -899,72 +1003,82 @@ local initEnviroment() {
       dir=("${shellDirs[@]}")
       file=("${shellFiles[@]}")
 
+      local missing_dir=false
       for dirs in "${dir[@]}"; do
-        if [[ -d "$dirs" ]]; then
-
-         for files in "${file[@]}"; do
-           if [[ -f "$files" ]]; then
-             ct=$HOME/comTermux/
-             ctf=$ct/files/
-             etc=$PREFIX/etc/
-             bash=$etc/bash.bashrc
-             permsShouldBeOctal=3020
-             
-             permsAre=$(($(fperm $ct)+$(fperm $ctf)+$(fperm $etc)+$(fperm $bash)))
-
-             if (($permsAre == $permsShouldBeOctal)) then
-                runEnviroment
-                return 0;
-             else
-               fix::bash.bashrc\\ENOPERM && \
-               runEnviroment
-               return 0
-             fi
-           else
-
-            err "Uh-Oh! The directories exist but some files are missing.\n"
-            shizuku.IsRunning && printf "Attempting to create required files..\n"
-            sleep 0.5
-            boot.InstallFiles
-            if [[ -f "$files" ]]; then
-              ok "Success! Attempting to log into [shell(2000)], you wont see this message again unless the right conditions are met.\n"
-              sleep 0.2;
-              printf "\n\n"
-              runEnviroment
-              return 0;
-            else
-              critical "Uh-Oh! Critical [Files could not be created]; The only explanation could be that shizuku failed. If shizuku works and this still failed, then you're on your own;\nBailing out, Goodluck.\n\n";
-              return 74;
-            fi
-           fi
-          done
-
-        else
-          err "Uh-Oh! some directories are missing!\n"
-          printf "Attempting to create required directories..\n"
-          sleep 0.5;
-          bootStrapDirectories
-          boot.setupTermInfo
-
-          if [[ -d "$dirs" ]]; then
-            ok "Directories successfully created!\n"
-          else
-            critical "Uh-Oh! stderr: Critical [Directories could not be created]; The only explanation could be that shizuku failed. If shizuku works and this still failed, then you're on your own;\nBailing out, Goodluck.\n\n"
-            return 74;
-          fi
+        if [[ ! -d "$dirs" ]]; then
+          missing_dir=true
+          break
         fi
       done
+
+      if $missing_dir; then
+        err "Uh-Oh! some directories are missing!\n"
+        printf "Attempting to create required directories..\n"
+        sleep 0.5
+        bootStrapDirectories
+        boot.setupTermInfo
+
+      for dirs in "${dir[@]}"; do
+          if [[ ! -d "$dirs" ]]; then
+            critical "Uh-Oh! the needed directories could not be created, the only explanation could be that shizuku failed. If shizuku works and this still failed, then you're on your own.\n\n"
+            return 1
+          fi
+        done
+      ok "Directories successfully created!\n"
+      fi
+
+      local missing_file=false
+      for files in "${file[@]}"; do
+        if [[ ! -f "$files" ]]; then
+          missing_file=true
+          break
+        fi
+      done
+
+      if $missing_file; then
+        err "Uh-Oh! The directories exist but some files are missing.\n"
+        shizuku.IsRunning && info "Attempting to create required files..\n"
+        sleep 0.5
+        boot.InstallFiles
+
+        for files in "${file[@]}"; do
+          if [[ ! -f "$files" ]]; then
+            critical "Uh-Oh! The needed files could not be created, the only explanation could be that shizuku failed. If shizuku works and this still failed, then you're on your own.\n\n"
+            return 74
+          fi
+        done
+        ok "Success! Attempting to log into [shell(2000)], you wont see this message again unless the right conditions are met.\n"
+        sleep 0.2
+        printf "\n\n"
+      fi
+
+      ct=$HOME/comTermux/
+      ctf=$ct/files/
+      etc=$PREFIX/etc/
+      bash=$etc/bash.bashrc
+      permsShouldBeOctal=3020
+
+      permsAre=$(($(fperm $ct)+$(fperm $ctf)+$(fperm $etc)+$(fperm $bash)))
+
+      if (($permsAre == $permsShouldBeOctal)); then
+        runEnviroment
+        return 0
+      else
+        fix::bash.bashrc\\ENOPERM && \
+        runEnviroment
+        return 0
+      fi
   }
 
 local fix::bash.bashrc\\ENOPERM() {
   ct=/data/data/com.termux
-  printf "\nFixing perm errors on login..\n"
+  info "\nFixing perm errors on login..\n"
   {chmod 755 $ct $ct/files/ $ct/files/usr/ $ct/files/usr/etc $ct/files/usr/etc/bash.bashrc} && return 0;
 }
 
   
   local changeTermuxTexEdperms() {
-    pf "Changing termux's usr/bin && libexec permissions to $1...\n"
+    info "Changing termux's usr/bin && libexec permissions to $1...\n"
       pref=/data/data/com.termux/files/usr
       chmod "$1" -R $pref/bin && \
       chmod "$1"    $pref/libexec/ && \
@@ -979,7 +1093,7 @@ local fix::bash.bashrc\\ENOPERM() {
     }
 
   local changeTermuxSharePerms() {
-    pf "Changing termux's usr/share && terminfo permissions to $1...\n"
+    info "Changing termux's usr/share && terminfo permissions to $1...\n"
       pref=/data/data/com.termux/files/usr/share/
       chmod "$1" $pref
       chmod "$1" -R $pref/terminfo
@@ -989,26 +1103,26 @@ local fix::bash.bashrc\\ENOPERM() {
 
     vim+nano.installed &&  {
 
-    printf "Setting up text editors (vim & nano)..\n"
+    info "Setting up text editors (vim & nano)..\n"
     sleep 0.2
 
     changeTermuxRoot 755 && \
     changeShellRoot 755 && \
 
-    printf "Changing some termux path perms..\n"
+    info "Changing some termux path perms..\n"
     changeTermuxTexEdperms 755 && \
-    printf "copying binaries to shell's bin/\n\n"
+    info "copying binaries to shell's bin/\n\n"
 
     {shizuku.IsRunning && [[ -d /data/local/tmp/sh/usr/bin/ ]] && rish -c "
     cp /data/data/com.termux/files/usr/bin/nano /data/local/tmp/sh/usr/bin/nano && \
       cp /data/data/com.termux/files/usr/libexec/vim/vim /data/local/tmp/sh/usr/bin/vim && \
       cp /data/local/tmp/sh/usr/bin/vim /data/local/tmp/sh/usr/bin/vi && \
       touch /data/local/tmp/sh/home/.vimrc" && return 0;}} || \
-      critical "\stderr: Critical [Could not install text editors]\n"; return 1;
+      critical "Text editors could not be configured"; return 1;
   }
 
   local boot.setupTermInfo() {
-    printf "Setting up terminfo..\n"
+    info "Setting up terminfo..\n"
     sleep 0.2
 
       changeTermuxRoot 755 && \
@@ -1029,7 +1143,7 @@ if [[ -z "$1" ]]; then
     boot.Init+Validation
     return
   else
-    err "seems like the su() enviroment isn't installed,\ndo you want to install it? [y/N]: "
+    err "seems like the su() enviroment isn't installed, or some files were missing.\nfix? [y/N]: "
     local reply
     read -r reply
     case "$reply" in
@@ -1037,7 +1151,7 @@ if [[ -z "$1" ]]; then
         boot.Install && boot.Init+Validation
         ;;
       *)
-        info "Abort.\n"
+        w_info "Abort.\n"
         return 1
         ;;
     esac
@@ -1055,8 +1169,8 @@ if [[ -n "$1" ]]; then
     if [[ -n "$2" && "$2" == -[yYfF] ]]; then
       printf "Wiping Shell's fs...\n"; removeShell.RootFS && ok "Success!\n"; return 0
     else
-      shizuku.IsRunning && info "{Shell.RootFS uninstallation}: Are you sure? if you stored sensitive data, or unbacked up configs here you will \033[91mpermanently\033[0m lose them. [y/N]\n"
-      local Choice; read Choice; case "$Choice" in;
+      shizuku.IsRunning && info "{Shell.RootFS uninstallation}: Are you sure? if you stored sensitive data, or unbacked up configs here you will ${RED}permanently${NC} lose them. [y/N]\n"
+      local Choice; read -r Choice; case "$Choice" in;
       y|Y|yes|Yes|yes) printf "Wiping Shell's fs...\n"; removeShell.RootFS && ok "Success!\n" && return 0 ;;
       n|N|No|no|*) printf "Abort.\n"; return 1 ;; esac
     fi
@@ -1067,7 +1181,7 @@ if [[ -n "$1" ]]; then
 
     -i|--install)
       if already:Installed; then
-        warn "stderr: warning: Conf already installed, run su -r/--reinstall to reinstall it.\n"
+        w_info "Shell enviroment is already installed, run su -r/--reinstall if you need to reinstall it.\n"
       else
         {boot.Install && su -rev && return 0} || return 1
       fi
@@ -1083,60 +1197,72 @@ if [[ -n "$1" ]]; then
 
     -h|--help)
 
-      cat <<EOF
+      printf "
 
-pseudo SuperUser via shizuku on termux
+${BLUE}pseudo SuperUser via shizuku on termux${NC}
 
-      Options:
+      ${WHITE}Options:${NC}
 
-      -u [Wipes the config]
-      -uf [Forcefully wipes the config]
-      -i [Installs the config]
-      -r [Reinstalls the config]
-      -ref [Forcefully reinstalls the config]
+      ${BLUE}-vrf${NC} [Verifies that the shell env is installed]
+      ${BLUE}-i${NC} [Installs the config]
+      ${BLUE}-r${NC} [Reinstalls the config]
+      ${BLUE}-ref${NC} [Forcefully reinstalls the config]
 
-      -fbe {[Fixes the permission error shown below]
-"bash: /data/data/com.termux/files/usr/etc/bash.bashrc: Permission denied"
-      on su login}
+      ${BLUE}-u${NC} [Wipes the shell config]
+      ${BLUE}-uf${NC} [Forcefully wipes the shell config]
 
-      -rev [Reverts all changes made to termux's files]
-      --nuke/--wipe [Fully reverts all changes made by {su}, besides package installations]
-      -o [if -l is passed, login with termux having open permissions, else just open permissions]
-      -ct [closes termux's fs]
-      -c [Calls sudo]
-      -cs [Closes shell's fs permissions]
-      -os [Opens shell's fs permissions]
-      -vrf [Verifies that the shell env is installed]
+      ${BLUE}-rev${NC} [Reverts all changes made to termux's files]
+      ${BLUE}--nuke${NC} [Fully reverts all FS changes made by ${CYAN}su${NC}]
 
-      --backup-conf [Backs up your current shell config, pass --backup-conf -h for more specific info.]
+      ${BLUE}--backup-conf${NC} [${WHITE}su --backup-conf -h for more info.${NC}]
 
-      -h/--help [Show this help screen]
+      ${BLUE}-fbe${NC} [Fix the bash.bashrc permission error on su login]
 
-      so : {
-        a seperate command rather than a flag, a fast wrapper between su and sudo that speeds up command execution:
-        run "so" with no arguments and fsu runs, putting you in the su() enviroment faster than if you ran su
-        run "so" with arguments and sudo runs but faster, (examples: so ls, so id, so vim /some/config/file)
+      ${BLUE}-o${NC} [Opens termux's fs]
+      ${BLUE}-ct${NC} [Closes termux's fs]
 
-        the reason as to why the "so" command runs faster than su/sudo is because it skips verification entirely and just executes, so in turn, make sure that su() is installed properly [su -vrf].
+      ${BLUE}-os${NC} [Opens shell's fs permissions]
+      ${BLUE}-cs${NC} [Closes shell's fs permissions]
 
-Base: rish [~/.local/bin/rish], shizuku's default shell
-EOF
+      ${BLUE}-c${NC} [Calls ${CYAN}sudo${NC} (su -c command)]
+
+      ${CYAN}\"so\"${NC} command: run su -soh for more info.
+
+      ${BLUE}-h/--help${WHITE} [Show this help screen]${NC}
+\n"
+
 return 0
 ;;
 
     -fix|-bashrc|-fixbashrc|-fixpermerror|-fbe|fixbasherr)
       warn "\nThis will make $etc/bash.bashrc world readable, to fix the permission error on su startup\n{--help for more info}."; printf "\n[y/N] ";
       local input;
-      read input
+      read -r input
       case "$input" in
         y|Y|yes|Yes) fix::bash.bashrc\\ENOPERM && ok "Success!\n"; return 0 ;;
-        n|N|no|No) err "Abort.\n"; return 1 ;;
+        n|N|no|No) w_info "Abort.\n"; return 1 ;;
         *) err "Invalid option [y/n]\nAbort.\n"; return 1;;
       esac ;;
 
     -c|--command|-cc) shift; sudo "$*" ;;
 
-    --nuke|--wipe|--redo-all) {removeShell.RootFS ; revertChanges} && info "\nFull wipe success!, all changes that were made by su were undone.\n\n"; return 0;;
+    --nuke|--wipe|--redo-all)
+      local sure
+      warn "\nAre you sure? this will erase /data/local/tmp/sh and revert all changes made by su [y/N]: "
+      read -r sure
+      case "$sure" in
+        y|Y)
+      {removeShell.RootFS ; revertChanges} && w_info "\nFull wipe success!, all changes that were made by su were undone.\n\n"
+        return 0
+        ;;
+       n|N)
+        w_info "\nAbort.\n"
+        ;;
+        *)
+        w_info "\nAbort.\n"
+        ;;
+      esac
+      ;;
 
     -o|--open)
       if [[ "$2" == "-l" ]] then
@@ -1156,7 +1282,7 @@ return 0
       already:Installed && [[ -d $usr/ext_baks ]] || mkdir $usr/ext_baks && return 0
       }
 
-    [[ -n "$2" ]] || critical "stderr: 1 flag needed (max), pass \`-h/--help\` for more info.\n";
+    [[ -n "$2" ]] || err "stderr: 1 flag needed (max), pass \`-h/--help\` for more info.\n";
 
       case "$2" in
         --full) INSTALLED && tar -czvpf /data/data/com.termux/files/usr/ext_baks/shell_full.tar.gz /data/local/tmp/sh && ok "Success! full backup stored at $PREFIX/ext_baks/shell_full.tar.gz" && return 0 ;;
@@ -1164,7 +1290,16 @@ return 0
 
           --del) deleteTermuxBackups ;;
 
-          -h|--help) info "Valid flags:\n--del {Deletes the backups (with confirmation)}\n--home {Partially backs up the full config (backs up only config files, seen in home/ (e.g: .bashrc)}\n--full {Fully backs up the entire shell config (/data/local/tmp/sh) recursively}\nBackup locations: $PREFIX/ext_baks"
+          -h|--help)
+            pf "
+            ${WHITE}Shell enviroment backup manager${NC}
+
+            Usage:
+            ${BLUE}--del${NC} [Delete backups with confirmation]
+            ${BLUE}--home${NC} [Backup shell home]
+            ${BLUE}--full${NC} [Backup the entire shell FS]
+            ${WHITE}Backups location: $PREFIX/ext_baks${NC}
+            ${GRAY}Knowledge on how to use tar is required.${NC}\n"
 
         esac ;;
 
@@ -1177,7 +1312,7 @@ return 0
         ok "the su() env is installed!\n"
         return 0
       else
-        err "the su() env is not installed."
+        err "the su() env is not installed, run ${CYAN}su -i${RED} to install.\n"
         return 1
       fi
       ;;
@@ -1190,6 +1325,26 @@ return 0
       fi
       ;;
 
+      -soh)
+
+printf "
+      ${CYAN}so${NC}:
+
+        ${WHITE}a wrapper between su and sudo that speeds up command execution.${NC}
+
+        Usage:
+
+        run ${CYAN}\"so\"${NC} with no arguments & fsu runs, putting you in su quickly
+        run ${CYAN}\"so\"${NC} with arguments and sudo runs,
+        (examples: ${BLUE}so ls${NC}, ${BLUE}so id${NC}, ${BLUE}so vim /some/config/file${NC})
+
+
+        the reason as to why the ${CYAN}\"so\"${NC} command runs faster than su/sudo is because it skips verification entirely and just executes, so in turn, ${WHITE}make sure that su() is installed properly${NC} [${CYAN}su -vrf${NC}].
+
+        ${CYAN}so ${WHITE}is reccomended to use instead of ${CYAN}su${NC} & ${CYAN}sudo ${WHITE}if the su enviroment is installed.${NC}
+        \n"
+
+        ;;
 
     *) err "Invalid option: \"$1\"; run su -h to see valid flags.\n"; return 1 ;;
     
@@ -1240,7 +1395,7 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
              exec eval "$*"' -- "$*"
     else; 
       critical "Uh-Oh! su is not installed and sudo couldnt run,\n"
-      info "but to run sudo commands anyways, use the \'so\' command.\n"""
+      info "but to run sudo commands anyways, use the ${CYAN}so${BLUE} command with arguments. (${CYAN}su -soh${NC} for more info)\n"
     return 1
     fi
 }
@@ -1363,14 +1518,12 @@ wlw() {
 
 wtf() {
   if [[ -z $1 ]]; then
-    pf "stderr: NoOp, pass -h\n"
+    err "No arguments given\n"
   elif [[ $1 == "is" ]]; then
     shift
     whatis "$@"
-  elif [[ $1 == "-h" ]]; then
-    pf "the only argument is \"is\" lol, i just wanted to waste your time.\n"
   else
-    err "Invalid operation given. pass -h to show the help message\n"
+    whatis "$@"
   fi
 }
 
@@ -1434,9 +1587,27 @@ nd() {
   local file_opt="$1"
 
   if [[ -z "$file_opt" ]]; then
-    err "NoOp, Usage: \n\n f/fu/fun/func/functions to edit functions. \n a/al/alias/aliases to edit aliases. \n at/au/auto/startup/autostart/ast to edit things that run on startup. \n e/ex/exp/exports to edit exports. \n h/ho/hook/hooks to edit hooks (e.g eval \$(zoxide init zsh)). \n k/key/ky/binds/keybinds/keybind to edit keybinds. \n pkg/pcheck/pgc/pack/package/pa to edit the script that checks whether your package manager is APT, or pacman. \n p/pl/plug/plugins/plugin to edit your zsh plugins. \n t/th/theme/themes to edit your zsh themes. \n un/una/unal/unaliases/unaliases to edit which aliases will be forgotten. \n uf/unf/unfun/unfunc/unfu/unfunctions to edit functions that will be forgotten. \n z/zsh/zs/zshrc to edit in what order the files will be sourced. \n\n"
+    err "No operation given, pass -h for help.\n\n"
+    return 1
     elif [[ "$file_opt" == "-h" ]]; then
-      pf "Usage: \n\n f/fu/fun/func/functions to edit functions. \n al/alias/aliases to edit aliases. \n a/at/au/auto/startup/autostart/ast to edit things that run on startup. \n e/ex/exp/exports to edit exports. \n h/ho/hook/hooks to edit hooks (e.g eval \$(zoxide init zsh)). \n k/key/ky/binds/keybinds/keybind to edit keybinds. \n pkg/pcheck/pgc/pack/package/pa to edit the script that checks whether your package manager is APT, or pacman. \n p/pl/plug/plugins/plugin to edit your zsh plugins. \n t/th/theme/themes to edit your zsh themes. \n un/una/unal/unaliases/unaliases to edit which aliases will be forgotten. \n uf/unf/unfun/unfunc/unfu/unfunctions to edit functions that will be forgotten. \n z/zsh/zs/zshrc to edit in what order the files will be sourced. \n\n"
+      pf "
+      Edit zsh.d configuration files
+      Usage:
+
+      ${BLUE}f/fu/fun${NC} to edit functions.
+      ${BLUE}al/alias${NC} to edit aliases.
+      ${BLUE}a/at/au/ast${NC} to edit autostart.
+      ${BLUE}e/ex/exp${NC} to edit exports.
+      ${BLUE}h/ho/hook${NC} to edit hooks.
+      ${BLUE}k/key/ky/binds${NC} to edit keybinds.
+      ${BLUE}pkg/pcheck/pgc${NC} to edit pkgchecks.
+      ${BLUE}p/pl/plug${NC} to edit zsh plugins.
+      ${BLUE}t/th/theme${NC} to edit zsh themes.
+      ${BLUE}un/una/unal${NC} to edit unaliases.
+      ${BLUE}uf/unf/unfun${NC} to edit unfunctions.
+      ${BLUE}z/zsh/zs/zshrc${NC} to edit zshrc.
+      \n"
+      return 0
   fi
 
   case "$file_opt" in
@@ -1477,7 +1648,7 @@ nd() {
   $EDITOR ~/.zshrc
   ;;
   *)
-    err "Invalid OPT, \"$file_opt\". pass -h to show the help screen.\n"
+    err "Invalid option, \"$file_opt\". pass -h to show the help screen.\n"
   esac
 }
 
@@ -1532,30 +1703,30 @@ fcount() {
 				shift
 				;;
 			(-h | --help) 
-				cat <<'EOF'
+				printf "
 
-fcount() - Count files and directories
+${BLUE}fcount() - Count files and directories${NC}
 
-Usage: fcount [OPTIONS] [directory...]
+${WHITE}Usage: fcount [OPTIONS] [directory...]${NC}
 
 Options:
-    -a, --all       Include dotfiles in count
-    -s, --silent    Silent mode: only output total count as integer
-    -h, --help      Show this help message
+    ${BLUE}-a, --all${NC}       Include dotfiles in count
+    ${BLUE}-s, --silent${NC}    Silent mode: only output total count as integer
+    ${BLUE}-h, --help${NC}      Show this help message
 
 Arguments:
     directory       One or more directories to count (default: current directory)
 
-Examples:
-    fcount                          Count in current directory
-    fcount /tmp                     Count in /tmp
-    fcount /tmp /data /sdcard       Count in multiple directories
-    fcount -a /system /usr          Count with dotfiles in multiple dirs
-    fcount -s /tmp                  Silent: just print the number
-    fcount -sa /tmp                 Silent with dotfiles
-    fcount -s -a /tmp               Silent with dotfiles (alt syntax)
+${WHITE}Examples:${NC}
+    ${BLUE}fcount${NC}                          Count in current directory
+    ${BLUE}fcount /tmp${NC}                     Count in /tmp
+    ${BLUE}fcount /tmp /data /sdcard${NC}       Count in multiple directories
+    ${BLUE}fcount -a /system /usr${NC}          Count with dotfiles in multiple dirs
+    ${BLUE}fcount -s /tmp${NC}                  Silent: just print the number
+    ${BLUE}fcount -sa /tmp${NC}                 Silent with dotfiles
+    ${BLUE}fcount -s -a /tmp${NC}               Silent with dotfiles (alt syntax)
     
-EOF
+"
 				return 0 
 				;;
 			(-*) 
@@ -1842,7 +2013,7 @@ alt() {
   if [[ $PKG == "apt" ]]; then
     # check if nala is installed
     if ! command -v nala >/dev/null 2>&1; then
-        critical "Uh-Oh! nala not found, can be installed by running:\n apt install nala\n"
+        err "Uh-Oh! nala not found, can be installed by running:\n apt install nala\n"
         return 1
     fi
 
@@ -1881,7 +2052,10 @@ alt() {
         ;;
     esac
   else
-    critical "Uh-Oh! this wrapper script was made for apt, and it seems you are using something different.\n"
+    err "Uh-Oh! this wrapper script was made for apt, and it seems you are using something different.\n"
     return 1
   fi
   }
+
+rgb() { printf '\033[38;2;%d;%d;%dm' "$1" "$2" "$3"; }
+bgrgb() { printf '\033[48;2;%d;%d;%dm' "$1" "$2" "$3"; }

@@ -5,11 +5,11 @@ fi
 pkg=$(cat ~/.pkg)
 if [[ ! -s ~/.pkg ]]; then
   warn "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nif you input something incorrectly, you can run the command"
-  info " repkg "
+  c_info " repkg "
   warn "to run this prompt again."
-  warn "\n\nif you're unsure which package manager you have and you have not modified it, then type in"
-  info " default "
-  warn "to choose the default package manager that termux comes with."
+  w_info "\n\nif you're unsure which package manager you have and you have not modified it, then type in"
+  c_info " default "
+  w_info "to choose the default package manager that termux comes with."
   info "\n\ninput your package manager. [default / apt / pacman]: "
   read zzz
   case "$zzz" in
@@ -17,19 +17,19 @@ if [[ ! -s ~/.pkg ]]; then
       echo "apt" > ~/.pkg
       pkg="apt"
       clear
-      ok "APT was chosen as the primary package manager.\n"
+      bc_info "APT was chosen as the primary package manager.\n"
       ;;
     Pacman | pacman | PACMAN)
       echo "pacman" > ~/.pkg
       pkg="pacman"
       clear
-      ok "PACMAN was chosen as the primary package manager.\n"
+      bc_info "PACMAN was chosen as the primary package manager.\n"
       ;;
     Default | default | DEFAULT)
       echo "apt" > ~/.pkg
       pkg="apt"
       clear
-      ok "APT was chosen as the primary package manager.\n"
+      bc_info "APT was chosen as the primary package manager.\n"
       ;;
     *)
       critical "\ncritical: BAD input given, retry"
