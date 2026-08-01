@@ -1996,7 +1996,6 @@ fflib() {
 alt() {
 
   if [[ $PKG == "apt" ]]; then
-    # check if nala is installed
     if ! command -v nala >/dev/null 2>&1; then
         err "Uh-Oh! nala not found, can be installed by running:\n apt install nala\n"
         return 1

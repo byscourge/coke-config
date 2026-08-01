@@ -10,6 +10,7 @@ zinit snippet OMZL::history.zsh
 zinit snippet OMZL::key-bindings.zsh
 zinit snippet OMZL::termsupport.zsh
 zinit snippet OMZL::functions.zsh
+zinit snippet OMZL::completion.zsh
 
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting

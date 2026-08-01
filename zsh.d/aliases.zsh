@@ -67,7 +67,6 @@ alias imgdlp='gallery-dl'
 alias imdlp='gallery-dl'
 alias car='cat' ## typos r dangerous
 alias lsf='lsd | grep -F "$@"' ## ls-find
-alias foid='fdroidcl' ## sounds like female humanoid, bad naming
 alias lo='locate' ## cuz locate is too long
 alias lco='locate'
 alias loc='locate'
