@@ -1745,12 +1745,10 @@ ${WHITE}Examples:${NC}
 		target_dirs=(".")
 	fi
 	
-	# SILENT MODE
 	if [[ "$silent" == true ]]; then
 		local total=0 failed=0 dir
 		
 		for dir in "${target_dirs[@]}"; do
-			# All validation checks (silent)
 			[[ -f "$dir" ]] && { ((failed++)); continue; }
 			[[ ! -e "$dir" ]] && { ((failed++)); continue; }
 			[[ ! -d "$dir" ]] && { ((failed++)); continue; }
@@ -1790,15 +1788,12 @@ ${WHITE}Examples:${NC}
 			((total += count))
 		done
 		
-		# Output just the number
 		printf "%d" "$total"
 		
-		# Return error if any failed
 		[[ "$failed" -gt 0 ]] && return 1
 		return 0
 	fi
 	
-	# NORMAL MODE (unchanged)
 	local total_files=0
 	local total_visible=0
 	local total_dotfiles=0
@@ -1942,12 +1937,10 @@ fflib() {
     ldd "$resolved" 2>/dev/null | awk '/=>/ {print $3}' | grep -v '^$' || true
   }
 
-  # Check for -s flag at first or last position
   local silent=0
   if [[ "$1" == "-s" ]] || [[ "${@: -1}" == "-s" ]]; then
     silent=1
-    # Remove -s from args
-    set -- "${@:#-s}"  # ZSH: remove all -s occurrences
+    set -- "${@:#-s}"
   fi
 
   (($# == 0)) && { 
@@ -1955,7 +1948,6 @@ fflib() {
     return 1
   }
 
-  # SILENT MODE
   if ((silent)); then
     local all_libs=() missing_count=0 bin
     for bin in "$@"; do
@@ -1963,13 +1955,11 @@ fflib() {
         ((missing_count++))
         continue
       fi
-      # Collect all libs into array
       while IFS= read -r lib; do
         all_libs+=("$lib")
       done < <(findLibPaths "$bin")
     done
 
-    # Print all libs space-separated, deduplicated
     ((${#all_libs[@]} > 0)) && {
       printf "%s" "${all_libs[1]}"
       local lib
@@ -1978,12 +1968,10 @@ fflib() {
       done
     }
 
-    # Return error if any missing
     ((missing_count > 0)) && return 1
     return 0
   fi
 
-  # NORMAL MODE (unchanged)
   local bin missing=() first=1
   for bin in "$@"; do
     if ! findLibPaths "$bin" >/dev/null 2>&1; then
@@ -1991,17 +1979,14 @@ fflib() {
       continue
     fi
 
-    # Print separator before every block except the very first one
     ((first)) && first=0 || printf "\n"
 
     printf "%s:\n" "$bin"
     findLibPaths "$bin" | sort -u
   done
 
-  # Final four newlines after the last valid block (if any were printed)
   ((first)) || printf "\n\n\n"
 
-  # Report missing ones
   ((${#missing[@]} > 0)) && {
     printf "stderr: the following files were not found:\n" >&2
     printf "  %s\n" "${missing[@]}" >&2
