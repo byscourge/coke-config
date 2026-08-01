@@ -79,6 +79,8 @@ w_info() {
 # --------------------------------------------------------------------
 # loading & startup logic
 
+izload $ZDIR/pkgchecks.zsh # Script support: confirm whether user has apt or pacman
+
 izload $ZDIR/exports.zsh # Enviroment variables
 
 izload $ZDIR/plugins.zsh # ZSH Plugins
@@ -100,8 +102,6 @@ izload $ZDIR/aliases.zsh # Intentional duplicate
 izload $ZDIR/keybinds.zsh # Keybindings
 
 izload $ZDIR/exports.zsh # Intentional duplicate
-
-izload $ZDIR/pkgchecks.zsh # Script support: confirm whether user has apt or pacman
 
 izload $ZDIR/autostart.zsh # Autostart
 
