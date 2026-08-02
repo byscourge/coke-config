@@ -1,26 +1,38 @@
+<p align="center">
+  <img src=".local/share/.res/logo.png" width="200" />
+</p>
+
 <h1 align="center">coke-config</h1>
 
-## How it works:
-The main shell configuration (Zsh) is split into 11 seperate files, the main loader is ~/.zshrc & the modules are stored in ~/zsh.d.
+<p align="center">my personal termux dotfiles</p>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/zsh-5.9+-blue" />
+  <img src="https://img.shields.io/badge/termux-android-green" />
+  <img src="https://img.shields.io/badge/license-Unlicense-lightgrey" />
+</p>
 
-## Prerequisite android apps
-### Privelege escalation:
-[Shizuku](https://github.com/RikkaApps/Shizuku)
+<h3>Prerequisite android apps</h3>
+<h4>1. Privilege escalation</h4>
+<ul>
+  <li><a href="https://github.com/RikkaApps/Shizuku">Shizuku</a></li>
+   <li><a href="https://github.com/thedjchi/Shizuku">Alternative Shizuku fork by thedjchi</a></li>
+</ul>
+<h4>2. Android API support</h4>
+   <ul>
+     <li><a href="https://github.com/termux/termux-api">Termux:API</a></li>
+   </ul>
+<h4>3. QOL & Special key support</h4>
+<ul>
+   <li><a href="https://github.com/Julow/Unexpected-Keyboard">Unexpected Keyboard</a></li>
+</ul>
+<br><br>
+<h3>This project contains assets from:</h3>
 
-Alternatively, [a more actively maintained Shizuku fork](https://github.com/thedjchi/Shizuku)
+<ul>
+  
+   <li><a href="https://ohmyz.sh/">Oh My Zsh</a></li>
 
-### General use
-[Termux:API](https://github.com/termux/termux-api)
+   <li><a href="https://github.com/mayTermux/myTermux">mayTermux/myTermux</a></li>
 
-### Quality-Of-Life/Dev work
-[Unexpected Keyboard](https://github.com/Julow/Unexpected-Keyboard)
-
-
-
-
-## This project contains assets from:
-
-[Oh My Zsh](https://ohmyz.sh/)
-
-[mayTermux/myTermux](https://github.com/mayTermux/myTermux)
+</ul>

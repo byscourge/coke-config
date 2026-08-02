@@ -1,4 +1,4 @@
-# some functions and aliases rely on Shizuku (https://github.com/RikkaApps/Shizuku) for priveleged actions, for the best experience i personally reccomend you install it
+# some functions and aliases rely on Shizuku (https://github.com/RikkaApps/Shizuku) for privileged actions, for the best experience i personally reccomend you install it
 
 rish() {
   # rish is a way to interact with LADB (local adb shell/uid 2000) via shizuku. ## https://github.com/RikkaApps/Shizuku
@@ -426,7 +426,7 @@ fperm() {
   stat -c %a "$@"
 }
 
-su() { ## emulates a semi-root enviroment with shell(2000) priveleges via shizuku + rish(); (line :11), basically fakeroot but with real priveleges, albeit less than root.
+su() { ## emulates a semi-root enviroment with shell(2000) privileges via shizuku + rish(); (line :11), basically fakeroot but with real privileges, albeit less than root.
 
   if command -v rish &>/dev/null; then
     :
