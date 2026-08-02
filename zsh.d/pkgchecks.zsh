@@ -7,7 +7,7 @@ local __echoToPkg() {
 }
 
 alias repkg='rm ~/.pkg && szsh'
-alias szsh='clear && source ~/.zshrc'
+alias szsh='clear && exec zsh'
 
 if [[ ! -s ~/.pkg ]]; then
       if [[ -f $PREFIX/bin/apt && -f $PREFIX/bin/pacman ]]; then
