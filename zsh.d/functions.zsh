@@ -2001,7 +2001,7 @@ alt() {
         return 1
     fi
 
-    if [ -z "$1" ]; then
+    if [[ -z "$1" ]]; then
         nala -h
         return 0
     fi
@@ -2011,33 +2011,68 @@ alt() {
 
     case "$cmd" in
     install | in | add | i)
-        command nala install "$@"
+        nala install "$@"
         ;;
     search | look | sr | find)
-        command nala search "$@"
+        nala search "$@"
         ;;
     update | upd)
-        command nala update "$@"
+        nala update && nala upgrade "$@"
         ;;
     upgrade | upg)
-        command nala upgrade "$@"
+        nala upgrade "$@"
         ;;
     u | up)
-      command nala update && command nala upgrade "$@"
+      nala update && nala upgrade "$@"
       ;;
     show | info | inf | see)
-        command nala show "$@"
+        nala show "$@"
         ;;
     remove | del | delete | rm | rem | uninstall | r)
-        command nala remove "$@"
+        nala remove "$@"
         ;;
     *)
-        command nala "$cmd" "$@"
+        nala "$cmd" "$@"
         ;;
     esac
-  else
-    err "Uh-Oh! this wrapper script was made for apt, and it seems you are using something different.\n"
-    return 1
+  fi
+
+  if [[ "$PKG" == "pacman" ]]; then
+
+
+    if [[ -z "$1" ]]; then
+        pacman -h
+        return 0
+    fi
+
+    local cmd="$1"
+    shift
+    case "$cmd" in
+       install | in | add | i)
+           pacman -S "$@"
+           ;;
+       search | look | sr | find)
+           pacman -Ss "$@"
+           ;;
+       update | upd)
+           pacman -Syu "$@"
+           ;;
+       upgrade | upg)
+           pacman -Su "$@"
+           ;;
+       u | up)
+           pacman -Syu "$@"
+         ;;
+       show | info | inf | see)
+           pacman -Si "$@"
+           ;;
+       remove | del | delete | rm | rem | uninstall | r)
+           pacman -R "$@"
+           ;;
+       *)
+           pacman "$cmd" "$@"
+           ;;
+       esac
   fi
   }
 

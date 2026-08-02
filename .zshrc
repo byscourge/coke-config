@@ -76,6 +76,10 @@ bc_info() {
 w_info() {
   printf "${WHITE}$*${NC}"
 }
+
+g_info() {
+  printf "${GRAY}$*${NC}"
+}
 # --------------------------------------------------------------------
 # loading & startup logic
 

@@ -2,7 +2,12 @@ if [[ ! -f ~/.pkg ]]; then
   touch ~/.pkg
 fi
 
-pkg=$(cat ~/.pkg)
+local __echoToPkg() {
+  echo "$1" > ~/.pkg
+}
+alias repkg='rm ~/.pkg && szsh'
+alias szsh='clear && source ~/.zshrc'
+
 if [[ ! -s ~/.pkg ]]; then
   warn "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nif you input something incorrectly, you can run the command"
   c_info " repkg "
@@ -14,22 +19,25 @@ if [[ ! -s ~/.pkg ]]; then
   read zzz
   case "$zzz" in
     Apt | apt | APT)
-      echo "apt" > ~/.pkg
+      __echoToPkg apt
       pkg="apt"
       clear
       bc_info "APT was chosen as the primary package manager.\n"
+      return 0
       ;;
     Pacman | pacman | PACMAN)
-      echo "pacman" > ~/.pkg
+      __echoToPkg pacman
       pkg="pacman"
       clear
       bc_info "PACMAN was chosen as the primary package manager.\n"
+      return 0
       ;;
     Default | default | DEFAULT)
-      echo "apt" > ~/.pkg
+      __echoToPkg apt
       pkg="apt"
       clear
       bc_info "APT was chosen as the primary package manager.\n"
+      return 0
       ;;
     *)
       critical "\ncritical: BAD input given, retry"
@@ -44,5 +52,15 @@ if [[ ! -s ~/.pkg ]]; then
   esac
 fi
 
+if [[ "$(cat ~/.pkg)" != "apt" && "$(cat ~/.pkg)" != "pacman" ]]; then
+  clear
+  for i in {1..40}; do     
+    err "Invalid package variable detected!\n"
+    sleep 0.005
+  done
+  sleep 0.5
+  repkg
+fi
 
-PKG="$pkg"
+declare -g pkg=$(cat ~/.pkg)
+declare -g PKG="$pkg"
