@@ -47,7 +47,7 @@ if [[ ! -s ~/.pkg ]]; then
         return
       fi
 
-      if [[ -f $PREFIX/bin/apt ]] && apt --version &>/dev/null; then
+      if [[ -f $PREFIX/bin/apt ]]; then
         __echoToPkg apt
         pkg="apt"
         clear
@@ -55,7 +55,7 @@ if [[ ! -s ~/.pkg ]]; then
         return 0
       fi
 
-      if [[ -f $PREFIX/bin/pacman ]] && pacman -V &>/dev/null; then
+      if [[ -f $PREFIX/bin/pacman ]]; then
         __echoToPkg pacman
         pkg="pacman"
         clear
