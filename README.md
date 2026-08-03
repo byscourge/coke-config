@@ -12,24 +12,11 @@
   <img src="https://img.shields.io/badge/license-Unlicense-lightgrey" />
 </p>
 
-<h2>
-  Dependency installation
-</h2>
-<summary><strong>If you're using apt</strong></summary>
-```bash
-curl -fsSL https://raw.githubusercontent.com/byscourge/master/.assets/deps/.aptdeps.sh
-```
-
-<summary><strong>If you're using pacman</strong></summary>
-```bash
-curl -fsSL https://raw.githubusercontent.com/byscourge/master/.assets/deps/.pacmandeps.sh
-```
-
 <h3>Prerequisite android apps</h3>
 <h4>1. Privilege escalation</h4>
 <ul>
   <li><a href="https://github.com/RikkaApps/Shizuku">Shizuku</a></li>
-  <li><a href="https://github.com/thedjchi/Shizuku">Alternative Shizuku fork by thedjchi</a></li>
+   <li><a href="https://github.com/thedjchi/Shizuku">Alternative Shizuku fork by thedjchi</a></li>
 </ul>
 <h4>2. Android API support</h4>
    <ul>
