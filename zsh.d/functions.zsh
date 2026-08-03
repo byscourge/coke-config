@@ -2061,7 +2061,7 @@ alt() {
     local cmd="$1"
     shift
     case "$cmd" in
-       install | in | add | i)
+       install | in | ins | add | i)
            pacman -S "$@"
            ;;
        search | look | sr | find)

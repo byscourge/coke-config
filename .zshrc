@@ -15,6 +15,34 @@ izload() {
 }
 
 
+ZMODS=(
+  $ZDIR/pkgchecks.zsh # Script support: confirm whether user has apt or pacman
+  $ZDIR/exports.zsh # Enviroment variables
+
+  $ZDIR/plugins.zsh # ZSH Plugins
+
+  $ZDIR/hooks.zsh # Preloads
+
+  $ZDIR/themes.zsh # ZSH Themes
+
+  $ZDIR/unfunctions.zsh # Functions to be erased
+
+  $ZDIR/aliases.zsh # Aliases
+
+  $ZDIR/functions.zsh # Functions
+
+  $ZDIR/unaliases.zsh # Aliases to be erased
+
+  $ZDIR/aliases.zsh # Intentional duplicate
+
+  $ZDIR/keybinds.zsh # Keybindings
+
+  $ZDIR/exports.zsh # Intentional duplicate
+
+  $ZDIR/autostart.zsh # Autostart
+)
+
+
 zmodload zsh/datetime
 
 ZSHRC_START_TIME=$EPOCHREALTIME
@@ -83,31 +111,9 @@ g_info() {
 # --------------------------------------------------------------------
 # loading & startup logic
 
-izload $ZDIR/pkgchecks.zsh # Script support: confirm whether user has apt or pacman
-
-izload $ZDIR/exports.zsh # Enviroment variables
-
-izload $ZDIR/plugins.zsh # ZSH Plugins
-
-izload $ZDIR/hooks.zsh # Preloads
-
-izload $ZDIR/themes.zsh # ZSH Themes
-
-izload $ZDIR/unfunctions.zsh # Functions to be erased
-
-izload $ZDIR/aliases.zsh # Aliases
-
-izload $ZDIR/functions.zsh # Functions
-
-izload $ZDIR/unaliases.zsh # Aliases to be erased
-
-izload $ZDIR/aliases.zsh # Intentional duplicate
-
-izload $ZDIR/keybinds.zsh # Keybindings
-
-izload $ZDIR/exports.zsh # Intentional duplicate
-
-izload $ZDIR/autostart.zsh # Autostart
+for module in "${ZMODS[@]}"; do
+  izload "$module"
+done
 
 ZSH_HIGHLIGHT_STYLES[command]='fg=183'
 ZSH_HIGHLIGHT_STYLES[alias]='fg=183'
