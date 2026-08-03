@@ -14,7 +14,7 @@
 
 ## Dependency installation
 
-**If using apt:**
+**If using pacman:**
 ```bash
 sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.pacmandeps.sh)
 ```
