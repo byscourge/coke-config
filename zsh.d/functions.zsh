@@ -1995,15 +1995,34 @@ fflib() {
 
 alt() {
 
+
+    if [[ -z "$1" ]]; then
+        return 0
+    fi
+
+    if [[ "$1" == "-h" ]]; then
+      printf "
+      ${BLUE}Simple package manager wrapper${NC}
+
+      Usage:
+      
+      ${BLUE}alt add${NC}: install a package
+      ${BLUE}alt del${NC}: delete a package
+      ${BLUE}alt upd${NC}: sync repos
+      ${BLUE}alt upg${NC}: upgrade packages
+      ${BLUE}alt up${NC}: sync & upgrade
+      ${BLUE}alt find${NC}: search package repos
+      ${BLUE}alt show${NC}: show info for a package
+
+      \n"
+      return 0
+    fi
+
+
   if [[ $PKG == "apt" ]]; then
     if ! command -v nala >/dev/null 2>&1; then
         err "Uh-Oh! nala not found, can be installed by running:\n apt install nala\n"
         return 1
-    fi
-
-    if [[ -z "$1" ]]; then
-        nala -h
-        return 0
     fi
 
     local cmd="$1"
@@ -2017,7 +2036,7 @@ alt() {
         nala search "$@"
         ;;
     update | upd)
-        nala update && nala upgrade "$@"
+        nala update "$@"
         ;;
     upgrade | upg)
         nala upgrade "$@"
@@ -2039,12 +2058,6 @@ alt() {
 
   if [[ "$PKG" == "pacman" ]]; then
 
-
-    if [[ -z "$1" ]]; then
-        pacman -h
-        return 0
-    fi
-
     local cmd="$1"
     shift
     case "$cmd" in
@@ -2055,7 +2068,7 @@ alt() {
            pacman -Ss "$@"
            ;;
        update | upd)
-           pacman -Syu "$@"
+           pacman -Sy "$@"
            ;;
        upgrade | upg)
            pacman -Su "$@"

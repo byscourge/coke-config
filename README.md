@@ -27,7 +27,7 @@
    <li><a href="https://github.com/Julow/Unexpected-Keyboard">Unexpected Keyboard</a></li>
 </ul>
 <br><br>
-<h3>This project contains assets from:</h3>
+<h3>This project may contain assets from:</h3>
 
 <ul>
   
