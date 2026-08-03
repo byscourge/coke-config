@@ -1,3 +1,5 @@
+trap '' INT
+
 if [[ ! -f ~/.assets/pkg ]]; then
   touch ~/.assets/pkg
 fi
@@ -101,3 +103,5 @@ fi
 
 declare -g pkg=$(cat ~/.assets/pkg)
 declare -g PKG="$pkg"
+
+trap - INT
