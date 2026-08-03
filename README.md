@@ -12,22 +12,33 @@
   <img src="https://img.shields.io/badge/license-Unlicense-lightgrey" />
 </p>
 
-<h3>Prerequisite android apps</h3>
-<h4>1. Privilege escalation</h4>
+## Dependency installation
+
+**If using apt:**
+```bash
+sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.pacmandeps.sh)
+```
+**If using apt:**
+```bash
+sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.aptdeps.sh)
+```
+
+### Prerequisite android apps
+#### 1. Privilege escalation
 <ul>
   <li><a href="https://github.com/RikkaApps/Shizuku">Shizuku</a></li>
    <li><a href="https://github.com/thedjchi/Shizuku">Alternative Shizuku fork by thedjchi</a></li>
 </ul>
-<h4>2. Android API support</h4>
+#### 2. Android API support
    <ul>
      <li><a href="https://github.com/termux/termux-api">Termux:API</a></li>
    </ul>
-<h4>3. QOL & Special key support</h4>
+#### 3. QOL & Special key support
 <ul>
    <li><a href="https://github.com/Julow/Unexpected-Keyboard">Unexpected Keyboard</a></li>
 </ul>
 <br><br>
-<h3>This project may contain assets from:</h3>
+### This project may contain assets from:
 
 <ul>
   
