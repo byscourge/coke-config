@@ -1,15 +1,15 @@
-if [[ ! -f ~/.pkg ]]; then
-  touch ~/.pkg
+if [[ ! -f ~/.assets/pkg ]]; then
+  touch ~/.assets/pkg
 fi
 
 local __echoToPkg() {
-  echo "$1" > ~/.pkg
+  echo "$1" > ~/.assets/pkg
 }
 
-alias repkg='rm ~/.pkg && szsh'
+alias repkg='rm ~/.assets/pkg && szsh'
 alias szsh='clear && exec zsh'
 
-if [[ ! -s ~/.pkg ]]; then
+if [[ ! -s ~/.assets/pkg ]]; then
       if [[ -f $PREFIX/bin/apt && -f $PREFIX/bin/pacman ]]; then
         echo "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
         err "Unable to set package manager as you have two (apt + pacman).\n"
@@ -43,7 +43,7 @@ if [[ ! -s ~/.pkg ]]; then
 
       if [[ ! -f $PREFIX/bin/apt && ! -f $PREFIX/bin/pacman ]]; then
         err "Unable to set package manager as no supported were detected.\n"
-        rm ~/.pkg
+        rm ~/.assets/pkg
         return
       fi
 
@@ -64,7 +64,7 @@ if [[ ! -s ~/.pkg ]]; then
       fi
 fi
 
-filevalid="$(cat ~/.pkg)"
+filevalid="$(cat ~/.assets/pkg)"
 
 
 
@@ -99,5 +99,5 @@ if [[ "$filevalid" == "pacman" ]]; then
   fi
 fi
 
-declare -g pkg=$(cat ~/.pkg)
+declare -g pkg=$(cat ~/.assets/pkg)
 declare -g PKG="$pkg"

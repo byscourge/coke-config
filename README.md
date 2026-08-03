@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".local/share/.res/logo.png" width="200" />
+  <img src=".assets/res/logo.png" width="200" />
 </p>
 
 <h1 align="center">coke-config</h1>
