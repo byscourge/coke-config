@@ -1182,7 +1182,13 @@ if [[ -n "$1" ]]; then
       if already:Installed; then
         w_info "Shell enviroment is already installed, run su -r/--reinstall if you need to reinstall it.\n"
       else
-        {boot.Install && su -rev && return 0} || return 1
+        warn "\nThis will reinstall all files in the shell enviroment except for the home directory, continue? [ y/N ]: "
+        local confirm
+        read -r confirm
+        case "$confirm" in
+          y|Y) boot.Install ;;
+          *) w_info "\nAbort.\n";return ;;
+        esac
       fi
       ;;
     
