@@ -1303,8 +1303,6 @@ return 0
 
         esac ;;
 
-    --sudo-test) already:Installed && return 0 ;; # scripting purposes
-    
     --quick-run-no-validation) runEnviroment ;;
 
     --verify|-vrf)
@@ -1383,7 +1381,7 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
              return
     fi
 
-    if su --sudo-test; then
+    if su --verify-scriptable; then
       rish -c 'export PATH=/data/local/tmp/sh/usr/bin:$PATH && \
              export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
              export HOME=/data/local/tmp/sh/home && \
