@@ -604,6 +604,7 @@ local boot.InstallTree() {
 }
 
   local copyBash() {
+    openTermux
     info "Copying bash to Shell's usr/bin\n"
     shizuku.IsRunning && rish -c "cp /data/data/com.termux/files/usr/bin/bash /data/local/tmp/sh/usr/bin/bash"
   }
@@ -662,13 +663,13 @@ local initEnviroment() {
   }
 
       local config::LsColors() {
-        info "Configuring ls colors..\n"
-        sleep 0.2
-
         [[ -d /data/local/tmp/sh/home ]] || return 1
 
-        rish -c "grep -qF \"alias ls='ls --color=auto'\" /data/local/tmp/sh/home/.bashrc 2>/dev/null || echo alias ls=\"'ls --color=auto'\" >> /data/local/tmp/sh/home/.bashrc" && \
-        ok "Success!\n" && return 0 || return 1
+        cat /data/local/tmp/sh/home/.bashrc 2>/dev/null | grep -qF "alias ls='ls --color=auto'" && return 0
+
+        info "Configuring LS_COLORS..\n"
+        ok "Success!\n"
+        rish -c "echo \"alias ls='ls --color=auto'\" >> /data/local/tmp/sh/home/.bashrc" && \
       }
 
   local boot.InstallFiles() {
@@ -907,6 +908,16 @@ local initEnviroment() {
     ok "Success!\n"
   }
 
+
+  local anyMissing () {
+    local f
+    for f in "$@"
+    do
+      [[ -f "$f" ]] || return 0
+    done
+    return 1
+  }
+
   local boot.Init+Validation() {
 
     if [[ -d /data/local/tmp/sh ]]; then
@@ -942,66 +953,40 @@ local initEnviroment() {
       $dlt
       )
 
-    shellFiles=(     
-      $dlt/usr/share/terminfo/a/alacritty
-      $dlt/usr/share/terminfo/a/alacritty+common
-      $dlt/usr/share/terminfo/a/alacritty-direct
-      $dlt/usr/share/terminfo/a/ansi
-      $dlt/usr/share/terminfo/d/dtterm
-      $dlt/usr/share/terminfo/d/dumb
+    filesTerminfo=(
+      $dlt/usr/share/terminfo/a/alacritty $dlt/usr/share/terminfo/a/alacritty+common
+      $dlt/usr/share/terminfo/a/alacritty-direct $dlt/usr/share/terminfo/a/ansi
+      $dlt/usr/share/terminfo/d/dtterm $dlt/usr/share/terminfo/d/dumb
       $dlt/usr/share/terminfo/e/eterm-color
-      $dlt/usr/share/terminfo/f/foot
-      $dlt/usr/share/terminfo/f/foot+base
-      $dlt/usr/share/terminfo/f/foot-direct
-      $dlt/usr/share/terminfo/g/gnome
-      $dlt/usr/share/terminfo/g/gnome-256color
-      $dlt/usr/share/terminfo/k/kitty
-      $dlt/usr/share/terminfo/k/kitty+common
-      $dlt/usr/share/terminfo/k/kitty-direct
+      $dlt/usr/share/terminfo/f/foot $dlt/usr/share/terminfo/f/foot+base $dlt/usr/share/terminfo/f/foot-direct
+      $dlt/usr/share/terminfo/g/gnome $dlt/usr/share/terminfo/g/gnome-256color
+      $dlt/usr/share/terminfo/k/kitty $dlt/usr/share/terminfo/k/kitty+common $dlt/usr/share/terminfo/k/kitty-direct
       $dlt/usr/share/terminfo/l/linux
       $dlt/usr/share/terminfo/n/nsterm
-      $dlt/usr/share/terminfo/p/putty
-      $dlt/usr/share/terminfo/p/putty-256color
-      $dlt/usr/share/terminfo/r/rxvt
-      $dlt/usr/share/terminfo/r/rxvt-256color
-      $dlt/usr/share/terminfo/r/rxvt-unicode
-      $dlt/usr/share/terminfo/r/rxvt-unicode-256color
-      $dlt/usr/share/terminfo/s/screen
-      $dlt/usr/share/terminfo/s/screen-256color
-      $dlt/usr/share/terminfo/s/screen2
-      $dlt/usr/share/terminfo/s/st
-      $dlt/usr/share/terminfo/s/st-256color
-      $dlt/usr/share/terminfo/t/tmux
-      $dlt/usr/share/terminfo/t/tmux-256color
-      $dlt/usr/share/terminfo/v/vt100
-      $dlt/usr/share/terminfo/v/vt102
-      $dlt/usr/share/terminfo/v/vt52
-      $dlt/usr/share/terminfo/x/xterm
-      $dlt/usr/share/terminfo/x/xterm+256color
-      $dlt/usr/share/terminfo/x/xterm-16color
-      $dlt/usr/share/terminfo/x/xterm-256color
-      $dlt/usr/share/terminfo/x/xterm-color
-      $dlt/usr/share/terminfo/x/xterm-kitty
+      $dlt/usr/share/terminfo/p/putty $dlt/usr/share/terminfo/p/putty-256color
+      $dlt/usr/share/terminfo/r/rxvt $dlt/usr/share/terminfo/r/rxvt-256color
+      $dlt/usr/share/terminfo/r/rxvt-unicode $dlt/usr/share/terminfo/r/rxvt-unicode-256color
+      $dlt/usr/share/terminfo/s/screen $dlt/usr/share/terminfo/s/screen-256color $dlt/usr/share/terminfo/s/screen2
+      $dlt/usr/share/terminfo/s/st $dlt/usr/share/terminfo/s/st-256color
+      $dlt/usr/share/terminfo/t/tmux $dlt/usr/share/terminfo/t/tmux-256color
+      $dlt/usr/share/terminfo/v/vt100 $dlt/usr/share/terminfo/v/vt102 $dlt/usr/share/terminfo/v/vt52
+      $dlt/usr/share/terminfo/x/xterm $dlt/usr/share/terminfo/x/xterm+256color $dlt/usr/share/terminfo/x/xterm-16color
+      $dlt/usr/share/terminfo/x/xterm-256color $dlt/usr/share/terminfo/x/xterm-color $dlt/usr/share/terminfo/x/xterm-kitty
       $dlt/usr/share/terminfo/x/xterm-new
-      $dlt/usr/lib/ld-android.so
-      $dlt/usr/lib/libandroid-support.so
-      $dlt/usr/lib/libc.so
-      $dlt/usr/lib/libdl.so
-      $dlt/usr/lib/libiconv.so
-      $dlt/usr/lib/libncursesw.so.6
-      $dlt/usr/lib/libncursesw.so.6.5
-      $dlt/usr/lib/libreadline.so.8
-      $dlt/usr/lib/libreadline.so.8.3
+    )
+    filesBashBin=($dlt/usr/bin/bash)
+    filesBashLibs=(
+      $dlt/usr/lib/ld-android.so $dlt/usr/lib/libandroid-support.so $dlt/usr/lib/libc.so
+      $dlt/usr/lib/libdl.so $dlt/usr/lib/libiconv.so
+      $dlt/usr/lib/libncursesw.so.6 $dlt/usr/lib/libncursesw.so.6.5
+      $dlt/usr/lib/libreadline.so.8 $dlt/usr/lib/libreadline.so.8.3
       $dlt/usr/lib/libsodium.so
-      $dlt/usr/bin/bash
-      $dlt/usr/bin/nano
-      $dlt/usr/bin/vim
-      $dlt/usr/bin/vi
-      $dlt/usr/bin/tree
-      )
-    
-      dir=("${shellDirs[@]}")
-      file=("${shellFiles[@]}")
+    )
+    filesTexEd=($dlt/usr/bin/nano $dlt/usr/bin/vim $dlt/usr/bin/vi)
+    filesTree=($dlt/usr/bin/tree)
+
+    dir=("${shellDirs[@]}")
+    file=("${filesTerminfo[@]}" "${filesBashBin[@]}" "${filesBashLibs[@]}" "${filesTexEd[@]}" "${filesTree[@]}")
 
       local missing_dir=false
       for dirs in "${dir[@]}"; do
@@ -1013,7 +998,7 @@ local initEnviroment() {
 
       if $missing_dir; then
         err "Uh-Oh! some directories are missing!\n"
-        printf "Attempting to create required directories..\n"
+        info "Attempting to create required directories..\n"
         sleep 0.5
         bootStrapDirectories
         boot.setupTermInfo
@@ -1027,30 +1012,43 @@ local initEnviroment() {
       ok "Directories successfully created!\n"
       fi
 
-      local missing_file=false
-      for files in "${file[@]}"; do
-        if [[ ! -f "$files" ]]; then
-          missing_file=true
-          break
+    local -a groupsToRepair
+    groupsToRepair=()
+    anyMissing "${filesTerminfo[@]}" && groupsToRepair+=("terminfo")
+    anyMissing "${filesBashBin[@]}"  && groupsToRepair+=("bashbin")
+    anyMissing "${filesBashLibs[@]}" && groupsToRepair+=("bashlibs")
+    anyMissing "${filesTexEd[@]}"    && groupsToRepair+=("texed")
+    anyMissing "${filesTree[@]}"     && groupsToRepair+=("tree")
+
+    if [[ ${#groupsToRepair[@]} -gt 0 ]]
+    then
+      err "Uh-Oh! The directories exist but some files are missing.\n"
+      shizuku.IsRunning && info "Attempting to create required files..\n"
+      sleep 0.5
+      openTermux && openShell
+      local grp
+      for grp in "${groupsToRepair[@]}"
+      do
+        case "$grp" in
+          terminfo) boot.setupTermInfo ;;
+          bashbin) copyBash ;;
+          bashlibs) findBashLibraries && copyBashLibraries && linkBashLibraries ;;
+          texed) boot.InstallTexEd ;;
+          tree) boot.InstallTree ;;
+        esac
+      done
+      for files in "${file[@]}"
+      do
+        if [[ ! -f "$files" ]]
+        then
+          critical "Uh-Oh! The needed files could not be created, the only explanation could be that shizuku failed. If shizuku works and this still failed, then you're on your own.\n"
+          return 74
         fi
       done
-
-      if $missing_file; then
-        err "Uh-Oh! The directories exist but some files are missing.\n"
-        shizuku.IsRunning && info "Attempting to create required files..\n"
-        sleep 0.5
-        boot.InstallFiles
-
-        for files in "${file[@]}"; do
-          if [[ ! -f "$files" ]]; then
-            critical "Uh-Oh! The needed files could not be created, the only explanation could be that shizuku failed. If shizuku works and this still failed, then you're on your own.\n\n"
-            return 74
-          fi
-        done
-        ok "Success! Attempting to log into [shell(2000)], you wont see this message again unless the right conditions are met.\n"
-        sleep 0.2
-        printf "\n\n"
-      fi
+      ok "Success! Attempting to log into [shell(2000)], you wont see this message again unless the right conditions are met.\n"
+      sleep 0.2
+      printf "\n\n"
+    fi
 
       ct=$HOME/comTermux/
       ctf=$ct/files/
@@ -1061,6 +1059,7 @@ local initEnviroment() {
       permsAre=$(($(fperm $ct)+$(fperm $ctf)+$(fperm $etc)+$(fperm $bash)))
 
       if (($permsAre == $permsShouldBeOctal)); then
+        config::LsColors
         runEnviroment
         return 0
       else
@@ -1148,7 +1147,7 @@ if [[ -z "$1" ]]; then
     read -r reply
     case "$reply" in
       y | Y)
-        boot.Install && boot.Init+Validation
+        boot.Init+Validation
         ;;
       *)
         w_info "Abort.\n"
@@ -1310,7 +1309,7 @@ return 0
         ok "the su() env is installed!\n"
         return 0
       else
-        err "the su() env is not installed, run ${CYAN}su -i${RED} to install.\n"
+        err "the su() env is not installed, run ${CYAN}su${RED} to install.\n"
         return 1
       fi
       ;;
