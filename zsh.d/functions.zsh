@@ -2123,19 +2123,19 @@ alt() {
     shift
     case "$cmd" in
        install | in | ins | add | i)
-           pacman -S "$@"
+           pacman -S "$@" --needed
            ;;
        search | look | sr | find)
            pacman -Ss "$@"
            ;;
        update | upd)
-           pacman -Sy "$@"
+           pacman -Sy "$@" --needed
            ;;
        upgrade | upg)
-           pacman -Su "$@"
+           pacman -Su "$@" --needed
            ;;
        u | up)
-           pacman -Syu "$@"
+           pacman -Syu "$@" --needed
          ;;
        show | info | inf | see)
            pacman -Si "$@"
