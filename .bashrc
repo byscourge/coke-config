@@ -1,1 +1,0 @@
-echo "USE ZSHELLLLLLLLLLLLLLLLLL (please)"
