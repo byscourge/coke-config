@@ -11,7 +11,6 @@ setopt hist_ignore_space
 setopt hist_verify
 setopt INTERACTIVE_COMMENTS
 
-export pkg
 export PREFIX="/data/data/com.termux/files/usr"
 export PATH="$PREFIX/bin:$HOME/.local/bin"
 export LANG=en_US.UTF-8
@@ -26,5 +25,4 @@ export etc="$PREFIX/etc/"
 export usr="$PREFIX"
 export prefix="$PREFIX"
 export share="$PREFIX/share/"
-export PKG=$pkg
 export ct="/data/data/com.termux/"

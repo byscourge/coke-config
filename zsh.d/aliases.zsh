@@ -1,4 +1,3 @@
-alias history='history 0'
 alias l='lsd'
 alias ls='lsd'
 alias ec='echo'

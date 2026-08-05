@@ -444,6 +444,9 @@ su() { ## emulates a semi-root enviroment with shell(2000) privileges via shizuk
     fi
   }
 
+  # blanket test to improve script timing
+   shizuku.IsRunning || return 1
+
 local ldd.IsInstalled() {
   if [[ -f $PREFIX/bin/ldd ]]; then
       return 0
@@ -543,14 +546,16 @@ local vim+nano.installed() {
   }
 
   local changeShellRoot() {
+
     info "Changing Shell's fs permissions to $1...\n"
-    shizuku.IsRunning && rish -c "chmod $1 -R /data/local/tmp/sh"
+    rish -c "chmod $1 -R /data/local/tmp/sh"
   }
 
   local bootStrapDirectories() {
+
     info "starting Init /data/local/tmp/sh (Shell's fs)..\n"
 
-    shizuku.IsRunning && rish -c "cd /data/local/tmp/ && \
+    rish -c "cd /data/local/tmp/ && \
     mkdir ./sh 2>/dev/null
     
     echo '\033[1m\033[38;2;125;167;205mCreating common directories'
@@ -571,6 +576,7 @@ local vim+nano.installed() {
   }
 
 local boot.InstallTree() {
+
   if [[ -f $PREFIX/bin/tree ]]; then
     rish -c "cp /data/data/com.termux/files/usr/bin/tree /data/local/tmp/sh/usr/bin/tree" && return 0
   else
@@ -604,14 +610,16 @@ local boot.InstallTree() {
 }
 
   local copyBash() {
+
     openTermux
     info "Copying bash to Shell's usr/bin\n"
-    shizuku.IsRunning && rish -c "cp /data/data/com.termux/files/usr/bin/bash /data/local/tmp/sh/usr/bin/bash"
+    rish -c "cp /data/data/com.termux/files/usr/bin/bash /data/local/tmp/sh/usr/bin/bash"
   }
 
   local copyBashLibraries() {
+
     info "Copying bash's needed Linking libraries to Shell's usr/lib\n"
-    shizuku.IsRunning && rish -c "cp $(cat /data/data/com.termux/files/usr/tmp/bashLibraries) /data/local/tmp/sh/usr/lib"
+    rish -c "cp $(cat /data/data/com.termux/files/usr/tmp/bashLibraries) /data/local/tmp/sh/usr/lib"
   }
 
 local runEnviroment() {
@@ -635,22 +643,24 @@ local runEnviroment() {
 }
 
 local initEnviroment() {
+
   info "Initializing & prepping the Shell filesystem\n"
-  shizuku.IsRunning && rish -c "chmod 755 /data/local/tmp && \
+  rish -c "chmod 755 /data/local/tmp && \
     mkdir /data/local/tmp/sh 2>/dev/null && \
     chmod 777 -R /data/local/tmp/sh"
 }
 
   local linkBashLibraries() {
+
     info "linking Bash required Libaries's realPath, to their needed equivalent\n"
-      shizuku.IsRunning && rish -c " cd /data/local/tmp/sh/usr/lib && \
+      rish -c " cd /data/local/tmp/sh/usr/lib && \
         cp libreadline.so.* libreadline.so.8
         cp libncursesw.so.* libncursesw.so.6
     "
 }
 
   local removeShell.RootFS() {
-    shizuku.IsRunning && \
+
 
       if [[ ! -d /data/local/tmp/sh ]] then
         err "Shell enviroment is not installed, could not uninstall.\n"
@@ -674,7 +684,6 @@ local initEnviroment() {
 
   local boot.InstallFiles() {
 
-    shizuku.IsRunning && \
 
     initEnviroment && \
     bootStrapDirectories && \
@@ -703,7 +712,7 @@ local initEnviroment() {
     done; printf "\n\n"
 
   {
-    shizuku.IsRunning && initEnviroment && \
+    initEnviroment && \
     changeTermuxRoot 755 && \
 
     bootStrapDirectories && \
@@ -727,7 +736,6 @@ local initEnviroment() {
 
   local already:Installed() {
 
-    shizuku.IsRunning || exit 1
 
     [[ -d /data/local/tmp/sh ]] || return 1
     dlt=/data/local/tmp/sh
@@ -903,6 +911,7 @@ local initEnviroment() {
   }
 
   local closeShell() {
+
     info "Closing shell's fs permissions..\n"
     changeShellRoot 750 1>/dev/null && \
     ok "Success!\n"
@@ -920,10 +929,11 @@ local initEnviroment() {
 
   local boot.Init+Validation() {
 
+
     if [[ -d /data/local/tmp/sh ]]; then
       dlt=/data/local/tmp/sh
     else
-      {shizuku.IsRunning} && rish -c "mkdir /data/local/tmp/sh" && dlt=/data/local/tmp/sh
+      rish -c "mkdir /data/local/tmp/sh" && dlt=/data/local/tmp/sh
     fi
 
     shellDirs=(
@@ -1023,7 +1033,7 @@ local initEnviroment() {
     if [[ ${#groupsToRepair[@]} -gt 0 ]]
     then
       err "Uh-Oh! The directories exist but some files are missing.\n"
-      shizuku.IsRunning && info "Attempting to create required files..\n"
+      info "Attempting to create required files..\n"
       sleep 0.5
       openTermux && openShell
       local grp
@@ -1100,6 +1110,7 @@ local fix::bash.bashrc\\ENOPERM() {
 
   local boot.InstallTexEd() {
 
+
     vim+nano.installed &&  {
 
     info "Setting up text editors (vim & nano)..\n"
@@ -1112,22 +1123,21 @@ local fix::bash.bashrc\\ENOPERM() {
     changeTermuxTexEdperms 755 && \
     info "copying binaries to shell's bin/\n\n"
 
-    {shizuku.IsRunning && [[ -d /data/local/tmp/sh/usr/bin/ ]] && rish -c "
+    [[ -d /data/local/tmp/sh/usr/bin/ ]] && rish -c "
     cp /data/data/com.termux/files/usr/bin/nano /data/local/tmp/sh/usr/bin/nano && \
       cp /data/data/com.termux/files/usr/libexec/vim/vim /data/local/tmp/sh/usr/bin/vim && \
       cp /data/local/tmp/sh/usr/bin/vim /data/local/tmp/sh/usr/bin/vi && \
-      touch /data/local/tmp/sh/home/.vimrc" && return 0;}} || \
+      touch /data/local/tmp/sh/home/.vimrc" && return 0;} || \
       critical "Text editors could not be configured"; return 1;
-  }
+}
 
   local boot.setupTermInfo() {
+
     info "Setting up terminfo..\n"
     sleep 0.2
 
       changeTermuxRoot 755 && \
       changeTermuxSharePerms 755 && \
-
-  shizuku.IsRunning && \
 
   [[ -d /data/local/tmp/sh/usr/share/terminfo/ ]] && \
 
@@ -1137,7 +1147,7 @@ local fix::bash.bashrc\\ENOPERM() {
 # logic end
 
 if [[ -z "$1" ]]; then
-    shizuku.IsRunning && \
+
   if already:Installed; then
     boot.Init+Validation
     return
@@ -1165,29 +1175,46 @@ if [[ -n "$1" ]]; then
 
     -u|--uninstall)
 
-    if [[ -n "$2" && "$2" == -[yYfF] ]]; then
-      printf "Wiping Shell's fs...\n"; removeShell.RootFS && ok "Success!\n"; return 0
-    else
-      shizuku.IsRunning && info "{Shell.RootFS uninstallation}: Are you sure? if you stored sensitive data, or unbacked up configs here you will ${RED}permanently${NC} lose them. [y/N]\n"
-      local Choice; read -r Choice; case "$Choice" in;
-      y|Y|yes|Yes|yes) printf "Wiping Shell's fs...\n"; removeShell.RootFS && ok "Success!\n" && return 0 ;;
-      n|N|No|no|*) printf "Abort.\n"; return 1 ;; esac
-    fi
+        info "Shell enviroment removal: Are you sure? if you stored sensitive data, or unbacked up configs here you will ${RED}permanently${BLUE} lose them. [y/N]: "
+
+      local Choice
+      read -r Choice
+      case "$Choice" in
+      y|Y)
+        printf "Wiping Shell's fs...\n"
+        removeShell.RootFS && ok "Success!\n"
+        return 0
+        ;;
+      *)
+        printf "Abort.\n"
+        return 1
+        ;;
+      esac
     ;;
 
-  -uf|-fu|-uF|-Fu|-FU|-UF) 
-      printf "Wiping Shell's fs...\n"; removeShell.RootFS && ok "Success!\n"; return 0 ;;
+     -uf) 
+
+      printf "Wiping Shell's fs...\n"
+      removeShell.RootFS && ok "Success!\n"
+      return 0
+      ;;
 
     -i|--install)
+
       if already:Installed; then
         w_info "Shell enviroment is already installed, run su -r/--reinstall if you need to reinstall it.\n"
       else
-        warn "\nThis will reinstall all files in the shell enviroment except for the home directory, continue? [ y/N ]: "
+        warn "\nThis will reinstall all files in the shell enviroment except for the home directory, continue? [y/N]: "
         local confirm
         read -r confirm
         case "$confirm" in
-          y|Y) boot.Install ;;
-          *) w_info "\nAbort.\n";return ;;
+          y|Y)
+            boot.Install
+            ;;
+          *)
+            w_info "\nAbort.\n"
+            return
+            ;;
         esac
       fi
       ;;
@@ -1195,10 +1222,33 @@ if [[ -n "$1" ]]; then
     -rev|--revert) revertChanges && return 0; ;;
 
     -r|--reinstall)
-      {su -u && su -i 2>/dev/null && return 0} || return 1; ;;
 
-    -ref|-reif|rnsf|--reinstall-force)
-      {su -fu && su -i 2>/dev/null && return 0} || return 1; ;;
+      warn "\nthis will completely delete the shell enviroment and then reinstall it, continue? [y/N]: "
+      local confirm
+      read -r confirm
+      case "$confirm" in
+        y|Y)
+          info "\nReinstalling the config..\n"
+          su -u && \
+          su -i && \
+          ok "Reinstallation success!\n"
+          return 0
+        ;;
+      *)
+        w_info "\nAbort.\n"
+        return
+        ;;
+      esac
+      ;;
+
+    -ref)
+
+        info "\nReinstalling the config..\n"
+        su -u && \
+        su -i && \
+        ok "Reinstallation success!\n"
+      return 0 || return 1
+      ;;
 
     -h|--help)
 
@@ -1209,7 +1259,9 @@ ${BLUE}pseudo SuperUser via shizuku on termux${NC}
       ${WHITE}Options:${NC}
 
       ${BLUE}-vrf${NC} [Verifies that the shell env is installed]
-      ${BLUE}-i${NC} [Installs the config]
+      ${BLUE}su${NC} [Installs/heals the config]
+      ${BLUE}-i${NC} [Forcefully installs the config]
+
       ${BLUE}-r${NC} [Reinstalls the config]
       ${BLUE}-ref${NC} [Forcefully reinstalls the config]
 
@@ -1239,19 +1291,26 @@ ${BLUE}pseudo SuperUser via shizuku on termux${NC}
 return 0
 ;;
 
-    -fix|-bashrc|-fixbashrc|-fixpermerror|-fbe|fixbasherr)
+    -fbe)
+
       warn "\nThis will make $etc/bash.bashrc world readable, to fix the permission error on su startup\n{--help for more info}."; printf "\n[y/N] ";
       local input;
       read -r input
       case "$input" in
-        y|Y|yes|Yes) fix::bash.bashrc\\ENOPERM && ok "Success!\n"; return 0 ;;
-        n|N|no|No) w_info "Abort.\n"; return 1 ;;
-        *) err "Invalid option [y/n]\nAbort.\n"; return 1;;
+        y|Y)
+          fix::bash.bashrc\\ENOPERM && ok "Success!\n"
+          return 0
+          ;;
+        *)
+          w_info "\nAbort.\n"
+          return
+          ;;
       esac ;;
 
     -c|--command|-cc) shift; sudo "$*" ;;
 
     --nuke|--wipe|--redo-all)
+
       local sure
       warn "\nAre you sure? this will erase /data/local/tmp/sh and revert all changes made by su [y/N]: "
       read -r sure
@@ -1259,9 +1318,6 @@ return 0
         y|Y)
       {removeShell.RootFS ; revertChanges} && w_info "\nFull wipe success!, all changes that were made by su were undone.\n\n"
         return 0
-        ;;
-       n|N)
-        w_info "\nAbort.\n"
         ;;
         *)
         w_info "\nAbort.\n"
@@ -1311,16 +1367,18 @@ return 0
     --quick-run-no-validation) runEnviroment ;;
 
     --verify|-vrf)
+
       if already:Installed; then
         ok "the su() env is installed!\n"
         return 0
       else
-        err "the su() env is not installed, run ${CYAN}su${RED} to install.\n"
+        err "the su() env is not installed or some files are missing, run ${CYAN}su${RED} to install/repair.\n"
         return 1
       fi
       ;;
 
     --verify-scriptable)
+
       if already:Installed; then
         return 0
       else
