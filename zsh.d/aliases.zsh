@@ -102,7 +102,6 @@ alias pipes='pipes.sh' ## another one
 alias c='clear'
 alias ttt='ttc' ## wheres the last t at????? HUH??????????
 alias x='exit' ## i use this really frequently and it obviously exists
-alias url='site'
 alias cdl='cd ~/logs/'
 alias p10kconf='p10k configure'
 alias p10c='p10kconf'
