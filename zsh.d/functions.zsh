@@ -77,26 +77,6 @@ shizuku() { ## open shizuku
   am start -n moe.shizuku.privileged.api/moe.shizuku.manager.MainActivity 2>/dev/null
 }
 
-dur() { ## cats dev/urandom
-  cat /dev/urandom|head -c "$1"
-}
-
-drc() { ## cats /dev/urandom with..... character counting
-  cat /dev/urandom|head -c "$1"|tcs
-}
-
-mfe() { ## make file empty, makes files empty.
-  dd if=/dev/null of="$1" bs=1K count=1
-}
-
-mfz() { ## makes files zeroes, useful for when u want a huge file
-  dd if=/dev/zero of="$1" bs="$2" count="$3"
-}
-
-mfur() { ## makes files urandom, really nice for what mfz does and also fucking over data (overwriting)
-  dd if=/dev/urandom of="$1" bs="$2" count="$3"
-}
-
 wtd() { ## while true do.. does thigns while true lol
   local allargs="$*"
   while true; do
@@ -116,11 +96,11 @@ wtw() { ## while true do with wait, what a surpriseeeeeeeeee
 
 fin() { ## for i in
   local firstarg="$1"
-  shift
-  local allargs="$*"
-  for i in range {2..$firstarg}; do # 2 because of shift. either that or anything else because if its 1, for example fin 3 ls does ls 4 times or 0 does does it 5 times.
+  local allargs="${argv[2,-1]}"
+
+  for ((i=1;i<=firstarg;i++)); do
     eval "$allargs"
-  done # i rewrote this myself (again) WITHOUT chatgpt because it sucks ass at shell coding lol, and yes this works better than the "((i++))" bullshit.
+  done
 }
 
 cg() { ## cd glob
