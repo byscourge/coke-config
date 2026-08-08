@@ -18,3 +18,5 @@
 .npm/
 .node_repl_history
 .autostart
+.config/byobu
+.config/zellij

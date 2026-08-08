@@ -1,6 +1,7 @@
 source $HOME/.config/lf/icons
 source ~/.p10k.zsh ## pretty prompt
 
+if [[ -z "$TMUX" ]]; then
 if [[ -z $DISPLAY ]]; then
   case "$-" in
     *i*)
@@ -34,5 +35,6 @@ else
     apt --version
     ;;
   esac
+fi
 fi
 se
