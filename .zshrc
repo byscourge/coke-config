@@ -67,15 +67,15 @@ GRAY=$'\033[38;2;69;79;96m'
 NC=$'\033[0m'
 
 critical() {
-  printf "${BRIGHT_RED}$*${NC}" >&2; return 1
+  printf "${BRIGHT_RED}$*${NC}" >&2
 }
 
 err() {
-  printf "${RED}$*${NC}" >&2; return 1
+  printf "${RED}$*${NC}" >&2
 }
 
 warn() {
-  printf "${ORANGE}$*${NC}" >&2; return 1
+  printf "${ORANGE}$*${NC}" >&2
 }
 
 pf() {
@@ -83,19 +83,19 @@ pf() {
 }
 
 ok() {
-  printf "${GREEN}$*${NC}"; return 0
+  printf "${GREEN}$*${NC}"
 }
 
 great() {
-  printf "${BRIGHT_GREEN}$*${NC}"; return 0
+  printf "${BRIGHT_GREEN}$*${NC}"
 }
 
 info() {
-  printf "${BLUE}$*${NC}";
+  printf "${BLUE}$*${NC}"
 }
 
 c_info() {
-  printf "${CYAN}$*${NC}";
+  printf "${CYAN}$*${NC}"
 }
 
 bc_info() {
