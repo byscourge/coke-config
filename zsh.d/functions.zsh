@@ -39,7 +39,7 @@ cl() {
     if [[ -t 0 ]]; then
         # No pipe: use arguments
         if [[ $# -eq 0 ]]; then
-            echo "cl: missing text or file" >&2
+            err "Missing text or file\n"
             return 1
         fi
         if [[ -f "$1" ]]; then
@@ -1323,7 +1323,7 @@ return 0
       already:Installed && [[ -d $usr/ext_baks ]] || mkdir $usr/ext_baks && return 0
       }
 
-    [[ -n "$2" ]] || err "stderr: 1 flag needed (max), pass \`-h/--help\` for more info.\n";
+    [[ -n "$2" ]] || err "One flag maximum, pass \`-h/--help\` for more info.\n";
 
       case "$2" in
         --full) INSTALLED && tar -czvpf /data/data/com.termux/files/usr/ext_baks/shell_full.tar.gz /data/local/tmp/sh && ok "Success! full backup stored at $PREFIX/ext_baks/shell_full.tar.gz" && return 0 ;;
@@ -1771,7 +1771,7 @@ ${WHITE}Examples:${NC}
 				return 0 
 				;;
 			(-*) 
-				err "stderr: Unknown option: $1\n"
+				err "Unknown option: $1\n"
 				err "Use -h or --help for usage information.\n"
 				return 1 
 				;;
@@ -1844,25 +1844,25 @@ ${WHITE}Examples:${NC}
 	local dir
 	for dir in "${target_dirs[@]}"; do
 		if [[ -f "$dir" ]]; then
-			err "stderr: Path '$dir' is a file, not a directory.\n"
+			err "Path '$dir' is a file, not a directory.\n"
 			((failed_dirs++))
 			continue
 		fi
 		
 		if [[ ! -e "$dir" ]]; then
-			err "stderr: Path '$dir' does not exist.\n"
+			err "Path '$dir' does not exist.\n"
 			((failed_dirs++))
 			continue
 		fi
 		
 		if [[ ! -d "$dir" ]]; then
-			err "stderr: Path '$dir' exists but is not a directory.\n"
+			err "Path '$dir' exists but is not a directory.\n"
 			((failed_dirs++))
 			continue
 		fi
 		
 		if [[ ! -r "$dir" ]]; then
-			err "stderr: Permission denied: Cannot read directory '$dir'.\n"
+			err "Permission denied: Cannot read directory '$dir'.\n"
 			((failed_dirs++))
 			continue
 		fi
@@ -1871,8 +1871,8 @@ ${WHITE}Examples:${NC}
 			local current_uid=$(id -u) 
 			if [[ "$current_uid" -ne 0 ]]; then
 				if ! lsd / > /dev/null 2>&1; then
-					err "stderr: Permission denied: Cannot read root directory '/'.\n"
-					err "Note: On Termux, you typically need elevated privileges (uid 0 or shell access via Shizuku).\n"
+					err "Permission denied: Cannot read root directory '/'.\n"
+          err "Required priveleges are root(0) or shell(2000).\n"
 					((failed_dirs++))
 					continue
 				fi
@@ -1880,7 +1880,7 @@ ${WHITE}Examples:${NC}
 		fi
 		
 		if [[ ! -x "$dir" ]]; then
-			err "stderr: Permission denied: Cannot access directory '$dir' (no execute permission).\n"
+			err "Permission denied: Cannot access directory '$dir' (no execute permission).\n"
 			((failed_dirs++))
 			continue
 		fi
@@ -1985,7 +1985,7 @@ fflib() {
   fi
 
   (($# == 0)) && { 
-    ((silent)) || printf "stderr: argc !>=1\n" >&2
+    ((silent)) || err "No arguments given!\n"
     return 1
   }
 
@@ -2029,7 +2029,7 @@ fflib() {
   ((first)) || printf "\n\n\n"
 
   ((${#missing[@]} > 0)) && {
-    printf "stderr: the following files were not found:\n" >&2
+    err "the following files were not found:\n"
     printf "  %s\n" "${missing[@]}" >&2
   }
 }
