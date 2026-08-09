@@ -106,6 +106,10 @@ w_info() {
   printf "${WHITE}$*${NC}"
 }
 
+bw_info() {
+  printf "${BRIGHT_WHITE}$*${NC}"
+}
+
 g_info() {
   printf "${GRAY}$*${NC}"
 }
