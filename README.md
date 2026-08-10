@@ -9,7 +9,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/zsh-5.9+-blue" />
   <img src="https://img.shields.io/badge/termux-android-green" />
-  <img src="https://img.shields.io/badge/license-Unlicense-lightgrey" />
+  <img src="https://img.shields.io/badge/License-MIT-green.svg" />
 </p>
 
 <h2>Dependencies</h2>
