@@ -9,7 +9,8 @@ izload() {
     source "$mod"
     return 0
   else
-    critical "Uh-Oh! File could not be loaded: $mod\n"
+    critical "File could not be loaded: ${WHITE}$mod${NC}\n"
+    __missingmod=true
     return 1
   fi
 }
@@ -22,8 +23,6 @@ ZMODS=(
   $ZDIR/plugins.zsh # ZSH Plugins
 
   $ZDIR/hooks.zsh # Preloads
-
-  $ZDIR/themes.zsh # ZSH Themes
 
   $ZDIR/unfunctions.zsh # Functions to be erased
 
@@ -38,6 +37,8 @@ ZMODS=(
   $ZDIR/keybinds.zsh # Keybindings
 
   $ZDIR/exports.zsh # Intentional duplicate
+
+  $ZDIR/themes.zsh # ZSH Themes
 
   $ZDIR/autostart.zsh # Autostart
 )
@@ -120,16 +121,10 @@ for module in "${ZMODS[@]}"; do
   izload "$module"
 done
 
-ZSH_HIGHLIGHT_STYLES[command]='fg=183'
-ZSH_HIGHLIGHT_STYLES[alias]='fg=183'
-ZSH_HIGHLIGHT_STYLES[function]='fg=183'
-ZSH_HIGHLIGHT_STYLES[path]='fg=135'
-
 ZSHRC_END_TIME=$EPOCHREALTIME
 printf -v ZSHRC_ELAPSED_MS '%.0f' $(( (ZSHRC_END_TIME - ZSHRC_START_TIME) * 1000 ))
 
-info "Zsh took [${ZSHRC_ELAPSED_MS}ms] to load.\n"
-printf "\n\n"
+[[ "$__missingmod" == "true" ]] || info "Zsh took [${ZSHRC_ELAPSED_MS}ms] to load.\n\n\n"
 
 else
   printf "\n\n\033[38;2;255;0;0mInstalled operating system is not android, config could not load.\n"

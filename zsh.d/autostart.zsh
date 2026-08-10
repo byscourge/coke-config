@@ -1,5 +1,7 @@
-source $HOME/.config/lf/icons
-source ~/.p10k.zsh ## pretty prompt
+if [[ "$__missingmod" == "true" ]]; then
+  info "Missing files were encountered during startup! please be sure to grab the latest modules alltogether from:\n${WHITE}https://github.com/byscourge/coke-config${NC}\n\n"
+  return 1
+fi
 
 if [[ -z "$TMUX" ]]; then
 if [[ -z $DISPLAY ]]; then
@@ -37,4 +39,3 @@ else
   esac
 fi
 fi
-se
