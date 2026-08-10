@@ -540,7 +540,7 @@ local vim+nano.installed() {
     
     echo '\033[1m\033[38;2;125;167;205mCreating common directories'
 
-    mkdir -p sh/home/ sh/usr/bin/  sh/usr/lib/ sh/etc/  sh/usr/share/terminfo/ sh/usr/libexec/ sh/tmp"
+    mkdir -p sh/home/ sh/usr/bin/  sh/usr/lib/ sh/usr/etc/  sh/usr/share/terminfo/ sh/usr/libexec/ sh/tmp"
   }
 
   local findLibPaths() {
@@ -608,17 +608,17 @@ local runEnviroment() {
     export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
     exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
 
-    export PATH=/data/local/tmp/sh/usr/bin:\$PATH && \
-    export HOME=/data/local/tmp/sh/home && \
-    export PREFIX=/data/local/tmp/sh/usr && \
-    export SHELL=/data/local/tmp/sh/usr/bin/bash && \
-    export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\" && \
-    export termuxPrefix=/data/data/com.termux/files/usr && \
-    export TERM=xterm-256color && \
+    export PATH=/data/local/tmp/sh/usr/bin:\$PATH
+    export HOME=/data/local/tmp/sh/home
+    export PREFIX=/data/local/tmp/sh/usr
+    export SHELL=/data/local/tmp/sh/usr/bin/bash
+    export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
+    export termuxPrefix=/data/data/com.termux/files/usr
+    export TERM=xterm-256color
     export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
-    export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\" && \
-    cd / && \
-    chmod 755 -R /data/local/tmp/sh && \
+    export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
+    cd /
+    chmod 755 -R /data/local/tmp/sh
     exec bash'"
 }
 
@@ -739,7 +739,7 @@ local initEnviroment() {
       $dlt/usr/share/terminfo/x
       $dlt/usr
       $dlt/home
-      $dlt/etc
+      $dlt/usr/etc
       $dlt/usr/bin
       $dlt/usr/lib
       $dlt/usr/share
@@ -936,7 +936,7 @@ local initEnviroment() {
       $dlt/usr/share/terminfo/x
       $dlt/usr
       $dlt/home
-      $dlt/etc
+      $dlt/usr/etc
       $dlt/usr/bin
       $dlt/usr/lib
       $dlt/usr/share
@@ -1184,7 +1184,7 @@ if [[ -n "$1" ]]; then
       if already:Installed; then
         w_info "Shell enviroment is already installed, run su -r/--reinstall if you need to reinstall it.\n"
       else
-        warn "\nThis will reinstall all files in the shell enviroment except for the home directory, continue? [y/N]: "
+        warn "\nThis will reinstall all files in the shell enviroment, continue? [y/N]: "
         local confirm
         read -r confirm
         case "$confirm" in
