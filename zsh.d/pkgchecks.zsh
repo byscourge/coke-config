@@ -160,4 +160,20 @@ fi
 declare -g pkg=$(cat ~/.assets/pkg)
 declare -g PKG="$pkg"
 
+pkgdisplay() {
+if [[ -z "$TMUX" ]]; then
+  case "$-" in
+    *i*)
+      case "$pkg" in
+        pacman) c_info "$(pacman -V)\n\n" ;;
+        apt) ok "$(apt --version)\n" ;;
+      esac
+    ;;
+    *)
+      return
+    ;;
+  esac
+fi
+}
+
 trap - INT
