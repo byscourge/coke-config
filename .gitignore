@@ -20,3 +20,6 @@
 .autostart
 .config/byobu
 .config/zellij
+.assets/deps/.syncdeplist
+.assets/deps/apt.txt
+.assets/deps/pacman.txt
