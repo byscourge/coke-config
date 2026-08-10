@@ -416,7 +416,7 @@ su() { ## emulates a semi-root enviroment with shell(2000) privileges via shizuk
   fi
   
   local shizuku.IsRunning() {
-    if ! {rish -c "return 0"} then
+    if ! {rish -c "return 0"} &>/dev/null; then
       err "rish failed to run. Shizuku may not be installed, configured properly, or running.\n"
       return 255
     else
