@@ -22,16 +22,16 @@ ccont() { ## stands for copy content (copy=c (conent=cont))
 }
 
 mfn() { #make file new
-  local pussy
-    for pussy in "$@"; do
-        touch -d "today" "$pussy"
-        termux-media-scan "$pussy"
+  local newfile
+    for newfile in "$@"; do
+        touch -d "today" "$newfile"
+        termux-media-scan "$newfile"
     done
 }
 
 tms() { #termux-media-scan, scans media
-    for titties in "$@"; do ## we love boobs
-        termux-media-scan "$titties"
+    for filescan in "$@"; do
+        termux-media-scan "$filescab"
     done
 }
 
