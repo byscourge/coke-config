@@ -1,5 +1,12 @@
 ## TERMUX package manager detection flow
 
+local __echoToPkg() {
+  echo "$1" > ~/.assets/pkg
+}
+
+alias repkg='rm ~/.assets/pkg && szsh'
+alias szsh='clear && exec zsh'
+
 runsilent() {
   {
     {
@@ -53,18 +60,52 @@ ${BLUE}Termux package manager detection${NC}
     fi
 }
 
+setpkg() {
+  [[ -n "$1" ]] || return 1
+
+  case "$1" in
+    apt)
+      __echoToPkg apt
+      pkg="apt"
+      clear
+      bc_info "APT was set as the primary package manager.\n"
+    ;;
+
+     pacman)
+       __echoToPkg pacman
+       pkg="pacman"
+       clear
+       bc_info "PACMAN was set as the primary package manager.\n"
+      ;;
+
+    *)
+      return 1
+      ;;
+  esac
+}
+
+
+pkgdisplay() {
+if [[ -z "$TMUX" ]]; then
+  case "$-" in
+    *i*)
+      case "$pkg" in
+        pacman) c_info "$(pacman -V)\n\n" ;;
+        apt) ok "$(apt --version)\n" ;;
+      esac
+    ;;
+    *)
+      return
+    ;;
+  esac
+fi
+}
+
 trap '' INT
 
 if [[ ! -f ~/.assets/pkg ]]; then
   touch ~/.assets/pkg
 fi
-
-local __echoToPkg() {
-  echo "$1" > ~/.assets/pkg
-}
-
-alias repkg='rm ~/.assets/pkg && szsh'
-alias szsh='clear && exec zsh'
 
 if [[ ! -s ~/.assets/pkg ]]; then
   pkgcheck
@@ -76,18 +117,12 @@ if [[ ! -s ~/.assets/pkg ]]; then
         read -r zzz
         case "$zzz" in
            Apt | apt | APT)
-             __echoToPkg apt
-             pkg="apt"
-             clear
-             bc_info "APT was set as the primary package manager.\n"
+             setpkg apt
              return 0
              ;;
  
            Pacman | pacman | PACMAN)
-             __echoToPkg pacman
-             pkg="pacman"
-             clear
-             bc_info "PACMAN was set as the primary package manager.\n"
+             setpkg pacman
              return 0
              ;;
 
@@ -105,27 +140,18 @@ if [[ ! -s ~/.assets/pkg ]]; then
         ;;
 
       2)
-        __echoToPkg apt
-        pkg="apt"
-        clear
-        bc_info "APT was set as the primary package manager.\n"
+        setpkg apt
         return 0
         ;;
 
       1)
-        __echoToPkg pacman
-        pkg="pacman"
-        clear
-        bc_info "PACMAN was set as the primary package manager.\n"
+        setpkg pacman
         return 0
         ;;
   esac
 fi
 
 filevalid="$(cat ~/.assets/pkg)"
-
-
-
 
 
 if [[ "$filevalid" != "apt" && "$filevalid" != "pacman" ]]; then
@@ -159,21 +185,5 @@ fi
 
 declare -g pkg=$(cat ~/.assets/pkg)
 declare -g PKG="$pkg"
-
-pkgdisplay() {
-if [[ -z "$TMUX" ]]; then
-  case "$-" in
-    *i*)
-      case "$pkg" in
-        pacman) c_info "$(pacman -V)\n\n" ;;
-        apt) ok "$(apt --version)\n" ;;
-      esac
-    ;;
-    *)
-      return
-    ;;
-  esac
-fi
-}
 
 trap - INT
