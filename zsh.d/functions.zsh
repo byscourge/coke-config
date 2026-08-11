@@ -679,8 +679,6 @@ local initEnviroment() {
     boot.InstallTexEd && \
     boot.InstallTree
 
-    return 0;
-
   }
 
   local boot.Install() {
