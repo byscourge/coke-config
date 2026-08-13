@@ -13,7 +13,20 @@
 </p>
 
 
-<h2>Installation</h2>
+## Dependencies
+
+**If using pacman:**
+```bash
+sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.pacmandeps.sh)
+```
+
+**If using apt:**
+```bash
+sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.aptdeps.sh)
+```
+
+## Installation
+
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.installer.sh)
 ```
