@@ -1,5 +1,7 @@
 #!/bin/bash
 
+insdate="$(date +%Y%m%d)"
+
 [[ -n "$HOME" ]] || exit 1
 
 cd $HOME/..
@@ -118,16 +120,17 @@ installDeps() {
 }
 
 backupHome() {
+  mkdir /data/data/com.termux/files/backup_home/
   showbanner
   printf "${BRIGHT_GREEN}====>${BLUE} Backing up current files..${NC}"
-  cp -av $HOME /data/data/com.termux/files/old_home && return 0
+  cp -av $HOME "/data/data/com.termux/files/backup_home/${insdate}_home" && return 0
 }
 
 installDotfiles() {
   showbanner
   printf "${BRIGHT_GREEN}====>${BLUE} Installing coke-config..${NC}"
 
-  if [[ -d /data/data/com.termux/files/old_home ]]; then
+  if [[ -d "/data/data/com.termux/files/backup_home/${insdate}_home" ]]; then
 
     cd $HOME/..
     git clone --depth=1 https://github.com/byscourge/coke-config tmphome && \
@@ -174,7 +177,7 @@ finishInstall() {
 answer=""
 showbanner
 
-printf "Warning: this will overwrite files in your Home directory, your old home will be stored at: ${WHITE}[/data/data/com.termux/files/old_home]${NC}\n\nYour current home is:\n$HOME"
+printf "Warning: this will overwrite files in your Home directory, your old home will be stored at: ${WHITE}[/data/data/com.termux/files/backup_home/${insdate}_home]${NC}\n\nYour current home is:\n$HOME"
 printf "\n${BLUE}Continue with installation? [y/N]:${NC} "
 read -r answer
 case "$answer" in
