@@ -14,7 +14,7 @@
 
 <h2>Installation</h2>
 ```bash
-    bash <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.installer.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.installer.sh)
 ```
 
 
