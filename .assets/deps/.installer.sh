@@ -1,5 +1,7 @@
 #!/bin/bash
 
+trap '' INT
+
 insdate="$(date +%Y%m%d%H%M%S)"
 
 [[ -n "$HOME" ]] || exit 1
@@ -230,3 +232,5 @@ case "$answer" in
    ;;
   *) printf "${BRIGHT_WHITE}\nAbort.${NC}\n" ;;
 esac
+
+# no need for a trap - INT, termux is forcefully killed
