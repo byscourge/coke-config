@@ -1,3 +1,5 @@
+# https://github.com/byscourge/coke-config
+
 # some functions and aliases rely on Shizuku (https://github.com/RikkaApps/Shizuku) for privileged actions, for the best experience i personally reccomend you install it
 
 rish() {

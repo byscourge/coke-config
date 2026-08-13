@@ -1,3 +1,5 @@
+# https://github.com/byscourge/coke-config
+
 ## TERMUX package manager detection flow
 
 local __echoToPkg() {

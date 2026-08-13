@@ -1,3 +1,5 @@
+# https://github.com/byscourge/coke-config
+
 zinit ice depth=1
 zinit light romkatv/powerlevel10k
 

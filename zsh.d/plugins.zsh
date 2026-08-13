@@ -1,3 +1,5 @@
+# https://github.com/byscourge/coke-config
+
 ### bootstrap zinit (self-installs on first run) ###
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [[ -d $ZINIT_HOME ]] || mkdir -p "$(dirname $ZINIT_HOME)"

@@ -1,3 +1,6 @@
+# https://github.com/byscourge/coke-config
+
+
 alias l='lsd'
 alias ls='lsd'
 alias ec='echo'

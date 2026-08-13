@@ -1,3 +1,5 @@
+# https://github.com/byscourge/coke-config
+
 unalias grep 2>/dev/null
 unalias cat 2>/dev/null
 unalias rd 2>/dev/null

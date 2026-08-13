@@ -1,3 +1,5 @@
+# https://github.com/byscourge/coke-config
+
 # { https://github.com/Julow/Unexpected-Keyboard } reccomended for the best experience
 # [Ctrl-Backspace] - delete whole word
 bindkey -M emacs '^H' backward-kill-word
