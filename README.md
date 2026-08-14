@@ -2,9 +2,12 @@
   <img src=".assets/res/logo.png" width="200" />
 </p>
 
+
 <h1 align="center">coke-config</h1>
 
+
 <p align="center">my personal termux dotfiles</p>
+
 
 <p align="center">
   <img src="https://img.shields.io/badge/zsh-5.9+-blue" />
@@ -13,23 +16,37 @@
 </p>
 
 
+
+
 ## Dependencies
+
 
 **If using pacman:**
 ```bash
 sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.pacmandeps.sh)
 ```
 
+
 **If using apt:**
 ```bash
 sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.aptdeps.sh)
 ```
 
+
 ## Installation
+
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.installer.sh)
 ```
+#### this installer script overwrites the entire $HOME directory with this repo's files, and backs it up to:
+``/data/data/com.termux/files/backup_home/%Y%m%d%H%M%S_home``,
+
+
+example:
+
+``/data/data/com.termux/files/backup_home/20260813214234_home``
+
 
 <h3>Prerequisite android apps</h3>
 <h4>1. Privilege escalation</h4>
@@ -48,10 +65,14 @@ bash <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master
 <br><br>
 <h3>This project may contain assets from:</h3>
 
+
 <ul>
   
    <li><a href="https://ohmyz.sh/">Oh My Zsh</a></li>
 
+
    <li><a href="https://github.com/mayTermux/myTermux">mayTermux/myTermux</a></li>
 
+
 </ul>
+
