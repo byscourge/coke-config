@@ -202,8 +202,16 @@ finishInstall() {
 answer=""
 showbanner
 
-printf "Warning: this will overwrite files in your Home directory, your old home will be stored at: ${WHITE}[/data/data/com.termux/files/backup_home/${insdate}_home]${NC}\n\nYour current home is:\n$HOME"
-printf "\n${BLUE}Continue with installation? [y/N]:${NC} "
+printf "
+${RED}Warning: this will overwrite all files in your home directory,${NC}
+${BLUE}BUT your old home will be backed up & stored at:${NC}
+
+${WHITE}/data/data/com.termux/files/backup_home/${insdate}_home${NC}
+
+${BRIGHT_WHITE}make sure to WRITE DOWN the path above as it is the only backup of your current configurations.${NC}
+
+Your current home is: ${WHITE}$HOME${NC}\n"
+printf "\n${CYAN}Continue with installation? [y/N]:${NC} "
 read -r answer
 case "$answer" in
   y|Y)
