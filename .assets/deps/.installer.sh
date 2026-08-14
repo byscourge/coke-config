@@ -216,7 +216,7 @@ read -r answer
 case "$answer" in
   y|Y)
     really=""
-    printf "\n${BLUE}Sure? [y/N]:${NC} "
+    printf "\n${CYAN}Are you sure? [y/N]:${NC} "
     read -r really
     case "$really" in
       y|Y)
