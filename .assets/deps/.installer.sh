@@ -232,7 +232,7 @@ case "$answer" in
           setupConf
           setupNeovim
           finishInstall
-        }
+        } || clear; printf "${RED}Backup failed! abort..\n"; return 1
         ;;
       *)
         printf "${BRIGHT_WHITE}\nAbort.${NC}\n" ;;
