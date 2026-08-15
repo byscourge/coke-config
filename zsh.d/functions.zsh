@@ -255,11 +255,19 @@ esac
 }
 
 pen() { ## print enviroment variables and find patterns in them
-if [[ $# -eq 0 ]]; then
-  printenv|sort
-else
-  printenv|sort|rg -- "$*"
-fi
+  if [[ -z $1 ]]; then
+    printenv|sort
+  else
+    case "$1" in
+      -i)
+        shift
+        printenv|sort|rg -i -- "$*"
+        ;;
+      *)
+        printenv|sort|rg -- "$*"
+        ;;
+    esac
+  fi
 }
 
 fz() { ## finds patterns in your ZSH config ( ~/zsh.d/ )
