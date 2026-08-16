@@ -33,7 +33,7 @@ mfn() { #make file new
 
 tms() { #termux-media-scan, scans media
     for filescan in "$@"; do
-        termux-media-scan "$filescab"
+        termux-media-scan "$filescan"
     done
 }
 
