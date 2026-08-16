@@ -1449,16 +1449,14 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
     fi
 }
 
-so() {
-  if [[ -z "$1" ]]; then
-    fsu
-  else
+fsu() {
+  [[ -z "$1" ]] && su --quick-run-no-validation || {
     sudo -f "$*"
-  fi
+  }
 }
 
-fsu() {
-  su --quick-run-no-validation
+so() {
+  fsu "$*"
 }
 
 pa() {
