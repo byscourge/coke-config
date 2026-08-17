@@ -27,8 +27,7 @@ alias nzsh='nvim ~/.zshrc' ## actually nzsh and na used to stand for nano zsh an
 alias cazsh='cat .zshrc' ## cat ~/.zshrc.... fzsh does this better tho lmao
 alias caut='cat ~/.autostart' ## cat autostart, why did i name it caut?
 alias bat='bat --no-paging'
-alias upd='apt update && apt upgrade -y' ##.... updates things
-alias pkglabl='rish -c "monkey -p com.csdroid.pkg -c android.intent.category.LAUNCHER 1"' ## pkch literally does the exact same thing but like 20000000000000000000000000000000000000x faster
+alias upd='alt up'
 alias py='python3' ## py = python duh
 alias js='node' ## js = javascript duh and node is nodejs
 alias ubuntu='proot-distro login ubuntu' ## ubuntu sucks btw lol, windows is still worse tho
@@ -382,7 +381,6 @@ alias bb='busybox'
 alias lse='live-server'
 alias les='live-server'
 alias zcw='z ~/code/web/'
-alias hail='mop com.aistra.hail'
 alias vibrate='termux-vibrate'
 alias youtube-dl='yt-dlp'
 alias pingole='ping google.com'
