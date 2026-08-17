@@ -2138,3 +2138,56 @@ alt() {
 
 rgb() { printf '\033[38;2;%d;%d;%dm' "$1" "$2" "$3"; }
 bgrgb() { printf '\033[48;2;%d;%d;%dm' "$1" "$2" "$3"; }
+
+homesh() { # home-shell
+
+
+insdir="$1"
+insshell="$2"
+
+  [[ -z "$1" ]] && {
+    err "Invalid args! pass -h.\n" ; return 1
+  }
+
+  [[ "$1" == "-h" || "$1" == "--help" ]] && {
+    printf "
+${BLUE}homesh: Start shell sessions in different HOME directories${NC}
+
+Documentation:
+
+${WHITE}homesh${NC} ${CYAN}./directory${NC} to use a directory inside your Current Working Directory,\nOR with full paths\n\n${CYAN}/data/data/com.termux/files/usr/directory/to/use${NC}\n${CYAN}./some/subfolder/somewhere${NC}
+${GRAY}---------------------------${NC}
+The default shell session will be ${BRIGHT_CYAN}bash${NC},\nbut different valid shell sessions can be used\n(${CYAN}zsh${NC}, ${CYAN}ksh${NC}, ${CYAN}sh${NC}, ${CYAN}bash${NC} OR any valid shells.)
+
+Full usage pattern:
+
+${WHITE}homesh ./backup_folder/home zsh${NC}\n"
+return 0
+  }
+
+
+  [[ -d "$insdir" ]] || {
+    err "Inputted Directory doesnt exist!\n"
+    return 1
+  }
+
+  [[ -z "$insshell" ]] && insshell="bash"
+
+  runsilent "$insshell" -c 'exit 0' || {
+    err "Inputted shell doesnt exist!\n"
+    return 1
+  }
+
+  case "$insdir" in
+  /*)
+      HOME="$insdir" "$insshell"
+    ;;
+
+  *)
+      HOME="$(realpath $(cd $insdir && pwd))" "$insshell"
+    ;;
+esac
+  
+  return
+
+}
