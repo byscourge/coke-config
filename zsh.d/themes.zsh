@@ -27,12 +27,13 @@ chp10k() {
 if [[ -n "$1" ]]; then
   chtheme="$1"
   if [[ -n "${P10K_THEMES[$chtheme]}" ]]; then
-    ln -sf "${P10K_THEMES[$chtheme]}" ~/.p10k.zsh
+    ln -sf "${P10K_THEMES[$chtheme]}" ~/.p10kstate.zsh
     ssz
   fi
 fi
 }
+typeset -g POWERLEVEL9K_CONFIG_FILE=$HOME/.p10kstate.zsh
 
-source ~/.p10k.zsh
+source $POWERLEVEL9K_CONFIG_FILE
 
 se
