@@ -2191,3 +2191,149 @@ esac
   return
 
 }
+
+tmbak() {
+  [[ -z "$1" ]] && {
+    err "Invalid args! pass -h\n"
+    return 1
+  }
+
+
+  local mkzstbk() {
+    tar --zstd -cvpf output-"$1".tar.zst -C "$2" .
+  }
+  
+local bkdate="$(date +%Y%m%d%H%M%S)"
+local hdate="$(date +%N)"
+local currentworkingdir="$(pwd)"
+
+  case "$1" in
+    -h|--help|help)
+      printf "
+  ${BLUE}Simple termux backup creation tool${NC}
+  ${BLUE}Backup termux paths to TAR-ZStandard archives${NC}
+Usage:
+
+${WHITE}tmbak${NC} flag
+
+Examples:
+
+${WHITE}tmbak${NC} home: Backup your \$HOME to ./output-home-DATE.tar.zst
+${WHITE}tmbak${NC} usr: Backup \$PREFIX to ./output-usr-DATE.tar.zst
+${WHITE}tmbak${NC} all: Backup all termux data files to ./output-everything-DATE.tar.zst
+
+the second flag is ${WHITE}--clean${NC}: remove trash/junk from the HOME directory on the archive (${BLUE}.cache/${NC}, ${BLUE}.local/share/${NC})\n"
+      ;;
+
+    home)
+      if [[ -z "$2" ]]; then
+        mkdir -p "$PREFIX/tmp/tmpBkDir" || {
+          err "Failed to create tmp dir!\n"
+          return 1
+        }
+
+        cp -av "$HOME" "$PREFIX/tmp/tmpBkDir/$hdate-home/" || {
+          err "Failed to copy files into tmp dir!\n"
+          return 1
+        }
+
+        mkzstbk "home-$bkdate" "$PREFIX/tmp/tmpBkDir/$hdate-home"
+        rm -rf "$PREFIX/tmp/tmpBkDir/"
+        return
+      fi
+        case "$2" in
+          --clean)
+            mkdir -p "$PREFIX/tmp/tmpBkDir" || {
+              err "Failed to create tmp dir!\n"
+              return 1
+            }
+            chmod -R 770 $PREFIX/tmp/tmpBkDir/
+
+            cp -av "$HOME" "$PREFIX/tmp/tmpBkDir/$hdate-home/" || {
+              err "Failed to copy files into tmp dir!\n"
+              return 1
+            }
+
+            chmod -R 770 $PREFIX/tmp/tmpBkDir/
+
+            rm -rfv "$PREFIX/tmp/tmpBkDir/$hdate-home/.local/share"
+            rm -rfv "$PREFIX/tmp/tmpBkDir/$hdate-home/.cache"
+            rm -rfv "$PREFIX/tmp/tmpBkDir/$hdate-home/.npm"
+
+            mkzstbk "home-$bkdate" "$PREFIX/tmp/tmpBkDir/$hdate-home"
+            rm -rf "$PREFIX/tmp/tmpBkDir/"
+            return
+            ;;
+        esac
+      ;;
+
+    usr)
+        local toobigusr
+        info "PREFIX (usr) can grow uncontrollably large, continue with the compression? [y/N]: "
+        read -r "toobigusr"
+        case "$toobigusr" in
+          y|Y)
+            mkdir -p "$HOME/tmp/tmpBkDir" || {
+              err "Failed to create tmp dir!\n"
+              return 1
+            }
+
+            cp -av "$PREFIX" "$HOME/tmp/tmpBkDir/$hdate-usr/" || {
+              err "Failed to copy files into tmp dir!\n"
+              return 1
+            }
+
+            chmod -R 770 $HOME/tmp/tmpBkDir/
+            mkzstbk "usr-$bkdate" "$HOME/tmp/tmpBkDir/$hdate-usr"
+            rm -rf "$HOME/tmp/tmpBkDir/"
+            return
+            ;;
+
+          *)
+            err "Abort.\n"
+            return
+            ;;
+        esac
+      ;;
+
+    all|full)
+        local toobigusr
+        info "Termux root (/data/data/com.termux/files/) can grow uncontrollably large, continue with the compression? [y/N]: "
+        read -r "toobigusr"
+        case "$toobigusr" in
+          y|Y)
+
+            mkdir -p "/data/data/com.termux/tmpBkDir" || {
+              err "Failed to create tmp dir!\n"
+              return 1
+            }
+            chmod -R 770 /data/data/com.termux/tmpBkDir
+
+            cd /data/data/com.termux/tmpBkDir
+
+            cp -av "/data/data/com.termux/files" "/data/data/com.termux/tmpBkDir/$hdate-everything" || {
+              err "Failed to copy files into tmp dir!\n"
+              return 1
+            }
+
+            chmod -R 770 /data/data/com.termux/tmpBkDir
+            mkzstbk "everything-$bkdate" "/data/data/com.termux/tmpBkDir/$hdate-everything/"
+            mv "/data/data/com.termux/tmpBkDir/output-everything-$bkdate.tar.zst" "$currentworkingdir/output-everything-$bkdate.tar.zst"
+            rm -rf "/data/data/com.termux/tmpBkDir/"
+            return
+
+            ;;
+
+          *)
+            err "Abort.\n"
+            return
+            ;;
+        esac
+      ;;
+
+    *)
+      err "Invalid args! pass -h\n"
+      return 1
+      ;;
+  esac
+}

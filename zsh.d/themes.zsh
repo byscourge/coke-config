@@ -9,10 +9,10 @@ ZSH_HIGHLIGHT_STYLES[alias]='fg=183'
 ZSH_HIGHLIGHT_STYLES[function]='fg=183'
 ZSH_HIGHLIGHT_STYLES[path]='fg=135'
 
-[[ ! -d "$HOME/.p10k.themes" || -f "$p10kthemes" ]] && rm ~/.p10k.themes/ 2>/dev/null ; mkdir -p "~/.p10k.themes/"
+[[ ! -d "$HOME/.p10k.themes" || -f "$p10kthemes" ]] && rm $HOME/.p10k.themes/ 2>/dev/null ; mkdir -p "$HOME/.p10k.themes/"
 
 chp10k() {
-  P10K_THEMES=(~/.p10k.themes/*)
+  P10K_THEMES=($HOME/.p10k.themes/*)
 
   [[ -z "$1" ]] && {
     i=1
@@ -27,7 +27,7 @@ chp10k() {
 if [[ -n "$1" ]]; then
   chtheme="$1"
   if [[ -n "${P10K_THEMES[$chtheme]}" ]]; then
-    ln -sf "${P10K_THEMES[$chtheme]}" ~/.p10kstate.zsh
+    ln -sf "${P10K_THEMES[$chtheme]}" $HOME/.p10kstate.zsh
     ssz
   fi
 fi
