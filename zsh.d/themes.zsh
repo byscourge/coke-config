@@ -32,8 +32,12 @@ if [[ -n "$1" ]]; then
   fi
 fi
 }
-typeset -g POWERLEVEL9K_CONFIG_FILE=$HOME/.p10kstate.zsh
 
-source $POWERLEVEL9K_CONFIG_FILE
+if [[ -f $HOME/.p10kstate.zsh ]]; then
+  typeset -g POWERLEVEL9K_CONFIG_FILE=$HOME/.p10kstate.zsh
+  source $POWERLEVEL9K_CONFIG_FILE
+else
+  source $HOME/.p10k.zsh
+fi
 
 se
