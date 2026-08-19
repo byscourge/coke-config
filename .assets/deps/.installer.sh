@@ -3,10 +3,12 @@
 trap '' INT
 
 insdate="$(date +%Y%m%d%H%M%S)"
+nanodate="$(date +%N)"
 
 [[ -n "$HOME" ]] || exit 1
 
-cd $HOME/..
+cd "$HOME"/..
+currentworkingdir="$(realpath $HOME/..)"
 
 ############# ============> FUNCTIONS
 
@@ -137,7 +139,7 @@ backupHome() {
   showbanner
   printf "${BRIGHT_GREEN}====> ${BLUE}Backing up your home directory..\n${NC}"
   sleep 1.5
-  cp -av $HOME "/data/data/com.termux/files/backup_home/${insdate}_home" && \
+  cp -av "$HOME" "/data/data/com.termux/files/backup_home/${insdate}_home" && \
     printf "${BRIGHT_GREEN}====> ${GREEN}Success! HOME was copied to:\n${WHITE}/data/data/com.termux/files/backup_home/${insdate}_home${NC}"
 
 }
@@ -145,39 +147,36 @@ backupHome() {
 installDotfiles() {
   showbanner
   printf "${BRIGHT_GREEN}====> ${BLUE}Installing coke-config..\n${NC}"
-    cd $HOME/..
-    # obscure name to ensure that no external files will be removed
-    [[ -d TEMPFILEDIR000xx ]] && rm -rf TEMPFILEDIR000xx13
-    git clone --depth=1 https://github.com/byscourge/coke-config TEMPFILEDIR000xx13 && \
-    [[ -d TEMPFILEDIR000xx13 ]] && \
-    printf "${BRIGHT_GREEN}====> ${BLUE}Replacing HOME..\n${NC}"
-    sleep 1
-    cd TEMPFILEDIR000xx13
-    rm -rf .git README.md LICENSE
-    cd ..
-    rm -rf $HOME
-    mv TEMPFILEDIR000xx13 home
+
+  nanodatebk="$currentworkingdir/$nanodate"
+
+  git clone --depth=1 https://github.com/byscourge/coke-config "$nanodatebk"
+  [[ -d "$nanodatebk" ]] || {
+    printf "${RED}Failed to clone dir!${NC}\n"
+    return 1
+  }
+
+  printf "${BRIGHT_GREEN}====> ${BLUE}Replacing HOME..\n${NC}"
+  sleep 1
+
+  rm -rf "$nanodatebk/.git"
+  rm -rfv "$nanodatebk/README.md"
+  rm -rfv "$nanodatebk/LICENSE"
+
+  rm -rfv "$HOME"
+  mv "$nanodatebk" "${currentworkingdir}/home"
 }
 
 setupConf() {
+  showbanner
   printf "${BRIGHT_GREEN}====> ${BLUE}Changing default shell to ZSH..\n${NC}"
   sleep 1
   chsh -s zsh
-  showbanner
   printf "${BRIGHT_GREEN}====> ${BLUE}Installing ZINIT..\n"
+  printf "${BRIGHT_GREEN}====> ${BLUE}Setting up neovim..${NC}\n"
   sleep 1
-  cd $HOME
-  zsh -c -i "exit"
-}
-
-setupNeovim() {
-  showbanner
-  printf "${BRIGHT_GREEN}====> ${BLUE}Setting up neovim..\n"
-  sleep 1.5
-  nvim --headless -c 'q!' &>/dev/null && {
-    nvim --headless "+Lazy! install" +qa
-    nvim --headless "+Lazy! sync" +qa
-  }
+  cd "$HOME"
+  zsh -c -i "nvim --headless '+Lazy! install' +qa ; exit"
 }
 
 finishInstall() {
@@ -185,11 +184,12 @@ finishInstall() {
   clear
   printf "${BLUE}$INSTALLCOMP"
   sleep 2.5
-  printf "\n${BLUE}3333333333"
+  printf "\n${BLUE}3"
   sleep 1
-  printf "\n${BLUE}2222222222"
+  printf "\n${BLUE}2"
   sleep 1
-  printf "\n${BLUE}1111111111"
+  printf "\n${BLUE}1"
+  sleep 0.5
   printf "${BRIGHT_WHITE}
          Closing termux! please reopen.
 ------------------------------------------------"
@@ -228,11 +228,14 @@ case "$answer" in
       }
         showbanner
         backupHome && {
-          installDotfiles && \
+          installDotfiles && {
           setupConf
-          setupNeovim
           finishInstall
-        } || clear; printf "${RED}Backup failed! abort..\n"; return 1
+          } || \
+          clear && printf "${RED}installation failed! abort..\n" && exit 1
+
+        } || \
+          clear && printf "${RED}Backup failed! abort..\n" && exit 1
         ;;
       *)
         printf "${BRIGHT_WHITE}\nAbort.${NC}\n" ;;
