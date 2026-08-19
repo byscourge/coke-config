@@ -16,7 +16,7 @@
 </p>
 
 
-
+#### Prior termux or Linux knowledge is reccomended.
 
 ## Dependencies
 
