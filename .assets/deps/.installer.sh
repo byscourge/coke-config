@@ -97,17 +97,17 @@ installDeps() {
       printf "${BRIGHT_GREEN}====> ${BLUE}Package manager is pacman!\n${NC}"
       printf "${BRIGHT_GREEN}====> ${BLUE}Installing dependencies..\n${NC}"
       sleep 1
-      sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.pacmandeps.sh)
+      sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.pacmandeps.sh) && return 0
       ;;
     2)
       printf "${BRIGHT_GREEN}====> ${BLUE}Package manager is apt!\n${NC}"
       printf "${BRIGHT_GREEN}====> ${BLUE}Installing dependencies..\n${NC}"
       sleep 1
-      sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.aptdeps.sh)
+      sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.aptdeps.sh) && return 0
       ;;
     3)
       printf "${RED}No usable package managers detected!${NC}\n"
-      return
+      exit 1
       ;;
     4)
       printf "${BRIGHT_GREEN}====> ${BLUE}It seems like you have two package managers.\nWould you like to use ${BRIGHT_CYAN}apt${BLUE} or${BRIGHT_CYAN} pacman${BLUE}?\n${NC}"
@@ -118,12 +118,12 @@ installDeps() {
         apt)
           printf "${BRIGHT_GREEN}====> ${BLUE}Installing dependencies..\n${NC}"
           sleep 1
-          sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.aptdeps.sh)
+          sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.aptdeps.sh) && return 0
          ;;
         pacman)
           printf "${BRIGHT_GREEN}====> ${BLUE}Installing dependencies..\n${NC}"
           sleep 1
-          sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.pacmandeps.sh)
+          sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.pacmandeps.sh) && return 0
           ;;
         *)
           printf "${BRIGHT_GREEN}====> ${RED}Invalid input! retry. . .\n${NC}"
@@ -153,7 +153,7 @@ installDotfiles() {
   git clone --depth=1 https://github.com/byscourge/coke-config "$nanodatebk"
   [[ -d "$nanodatebk" ]] || {
     printf "${RED}Failed to clone dir!${NC}\n"
-    return 1
+    exit 1
   }
 
   printf "${BRIGHT_GREEN}====> ${BLUE}Replacing HOME..\n${NC}"
@@ -220,22 +220,31 @@ case "$answer" in
     read -r really
     case "$really" in
       y|Y)
+
         installDeps || {
           showbanner
-          printf "${RED}It seems like the dependencies couldnt be resolved, retrying..."
-        clear
-        installDeps || printf "${RED}Dependencies unsatisfied, Abort...\n"
-      }
+          printf "${BRIGHT_RED} Dependencies could not be satisfied!\n"
+          exit 1
+        }
+
         showbanner
-        backupHome && {
-          installDotfiles && {
+
+        backupHome || {
+          showbanner
+          printf "${BRIGHT_RED}\$HOME Could not be backed up!\n"
+          exit 1
+        }
+
+        installDotfiles || {
+          showbanner
+          printf "${RED}Installation failed!\n"
+          rm -rfv "$nanodatebk"
+          exit 1
+        }
+
           setupConf
           finishInstall
-          } || \
-          clear && printf "${RED}installation failed! abort..\n" && exit 1
 
-        } || \
-          clear && printf "${RED}Backup failed! abort..\n" && exit 1
         ;;
       *)
         printf "${BRIGHT_WHITE}\nAbort.${NC}\n" ;;
