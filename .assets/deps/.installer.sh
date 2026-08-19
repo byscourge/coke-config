@@ -50,7 +50,36 @@ INSTALLCOMP="
 |___|_| |_|___/\__\__,_|_|_|  \___\___/|_| |_| |_| .__/|_|\___|\__\___| (_)
                                                  |_|"
 
+
+
+asci3="
+ #####  
+#     # 
+      # 
+ #####  
+      # 
+#     # 
+ #####\n"
+asci2="
+ #####  
+#     # 
+      # 
+ #####  
+#       
+#       
+#######\n"
+asci1="
+  #   
+ ##   
+# #   
+  #   
+  #   
+  #   
+#####\n"
+
+
 ## ============================
+
 
 showbanner() {
   clear
@@ -183,16 +212,20 @@ finishInstall() {
 
   clear
   printf "${BLUE}$INSTALLCOMP"
-  sleep 2.5
-  printf "\n${BLUE}3"
-  sleep 1
-  printf "\n${BLUE}2"
-  sleep 1
-  printf "\n${BLUE}1"
-  sleep 0.5
+  printf "\n\n\n\n"
   printf "${BRIGHT_WHITE}
-         Closing termux! please reopen.
-------------------------------------------------"
+  Closing termux in:
+-----------------------"
+  sleep 2.5
+  printf "\n${BLUE}$asci3"
+  sleep 1
+  printf "\n${BLUE}$asci2"
+  sleep 1
+  printf "\n${BLUE}$asci1"
+  sleep 1
+  printf "${BRIGHT_WHITE}
+         Please reopen termux!.
+----------------------------------------"
   sleep 2.5
   pkill -9 -f com.termux
 }
