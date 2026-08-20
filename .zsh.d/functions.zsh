@@ -235,7 +235,7 @@ apm() { # simple android package manager
         ok "APK extraction success! path: [./$selected.apk]\n"
     else
         err "APK extraction failed.\n"
-        info "Debugging info: path of failed APK was \'$apkpath\' \n"
+        debug "Debugging info: path of failed APK was \'$apkpath\' \n"
         ls -l "$apkpath" 2>/dev/null
         return 1
     fi
