@@ -33,13 +33,13 @@ sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.
 ```
 
 
-## Installation
+## Official installation
 
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.installer.sh)
 ```
-#### this installer script overwrites the entire $HOME directory with this repo's files, and backs it up to:
+#### The installer script overwrites the entire $HOME directory with this repo's files, and safely backs it up to:
 ``/data/data/com.termux/files/backup_home/%Y%m%d%H%M%S_home``
 
 

@@ -270,13 +270,13 @@ pen() { ## print enviroment variables and find patterns in them
   fi
 }
 
-fz() { ## finds patterns in your ZSH config ( ~/zsh.d/ )
+fz() { ## finds patterns in your ZSH config ( ~/.zsh.d// )
   local arg1="$1"
   if [[ -z "$arg1" ]]; then
     err "No operation given, pass -h for help.\n\n"
   elif [[ "$arg1" == "-h" ]]; then
     pf "
-    Find patterns in ~/zsh.d files
+    Find patterns in ~/.zsh.d/ files
     Usage:
 
     ${BLUE}fz func \"example\"${NC} find a pattern in functions
@@ -340,7 +340,7 @@ fz() { ## finds patterns in your ZSH config ( ~/zsh.d/ )
       ;;
      all)
        local every_file;
-       for every_file in $ZDIR/*; do
+       for every_file in $ZDIR/* $HOME/.zshrc; do
          if [[ -z "$regex" ]]; then
            ff -N "$every_file"
          else
@@ -396,7 +396,7 @@ fz() { ## finds patterns in your ZSH config ( ~/zsh.d/ )
       ;;
      all)
        local every_file;
-       for every_file in $ZDIR/*; do
+       for every_file in $ZDIR/* $HOME/.zshrc; do
          if [[ -z "$argv" ]]; then
            ff "$every_file"
          else
@@ -1598,11 +1598,11 @@ hmal() { # "how many aliases (?)"
   local arg1="$1"
   local alias_count=$(fz -N al|wcl)
   if [[ -z "$arg1" ]]; then
-    pf "you have $alias_count aliases in your \$(~/zsh.d/aliases.zsh)! \n"
+    pf "you have $alias_count aliases in your \$(~/.zsh.d//aliases.zsh)! \n"
   elif [[ "$arg1" == "-s" ]]; then
     pf "$alias_count"
   else
-    pf "you have $alias_count aliases in your \$(~/zsh.d/aliases.zsh)! \n"
+    pf "you have $alias_count aliases in your \$(~/.zsh.d//aliases.zsh)! \n"
   fi
 }
 
@@ -1610,11 +1610,11 @@ hmaf() { # "how many functions (?)"
   local arg1="$1"
   local func_count=$(fz -N fun ".*\(\).*\{"|wcl)
   if [[ -z "$arg1" ]]; then
-    pf "you have $func_count functions in your \$(~/zsh.d/functions.zsh)! \n"
+    pf "you have $func_count functions in your \$(~/.zsh.d//functions.zsh)! \n"
   elif [[ "$arg1" == "-s" ]]; then
     pf "$func_count"
   else
-    pf "you have $func_count functions in your \$(~/zsh.d/functions.zsh)! \n"
+    pf "you have $func_count functions in your \$(~/.zsh.d//functions.zsh)! \n"
   fi
 }
 
@@ -1638,7 +1638,7 @@ nd() {
     return 1
     elif [[ "$file_opt" == "-h" ]]; then
       pf "
-      Edit zsh.d configuration files
+      Edit .zsh.d/ configuration files
       Usage:
 
       ${BLUE}f/fu/fun${NC} to edit functions.

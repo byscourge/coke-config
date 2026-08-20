@@ -80,6 +80,62 @@ asci1="
 
 ## ============================
 
+termux-setup-storage() {
+
+  local -a filepaths=(
+    "$HOME/storage/dcim"
+    "$HOME/storage/downloads"
+    "$HOME/storage/movies"
+    "$HOME/storage/music"
+    "$HOME/storage/pictures"
+    "$HOME/storage/shared"
+  )
+
+  local -a storagepaths=(
+    "/storage/emulated/0/DCIM"
+    "/storage/emulated/0/Download"
+    "/storage/emulated/0/Movies"
+    "/storage/emulated/0/Music"
+    "/storage/emulated/0/Pictures"
+    "/storage/emulated/0"
+  )
+
+  if [[ -d "$HOME/storage" ]]; then
+    printf "
+
+    It appears that directory '~/storage' already exists.
+    This script is going to rebuild its structure from
+    scratch, wiping all dangling files. The actual storage
+    content IS NOT going to be deleted.\n"
+    read -re -p "Do you want to continue? (y/n) " CHOICE
+
+    if ! [[ "${CHOICE}" =~ (Y|y) ]]; then
+      echo "Aborting configuration and leaving directory '~/storage' intact."
+      return 1
+    fi
+  fi
+
+  case "${TERMUX__USER_ID:-}" in ''|*[!0-9]*|0[0-9]*) TERMUX__USER_ID=0;; esac
+
+  am broadcast --user "$TERMUX__USER_ID" \
+    -a "com.termux.app.reload_style" \
+    --es "com.termux.app.reload_style" "storage" \
+     "com.termux" > /dev/null
+
+  mkdir -p "$HOME/storage/" 2>/dev/null
+
+    for file in "${filepaths[@]}"; do
+      if [[ -L "$file" ]]; then
+        rm "$file" 2>/dev/null
+      fi
+    done
+
+    for i in {0..5}; do
+      ln -sf "${storagepaths[i]}" "${filepaths[i]}"
+    done
+
+}
+
 
 showbanner() {
   clear
@@ -92,6 +148,12 @@ runsilent() {
       eval "$*" # only meant to be used as one command
     } &>/dev/null && return 0
   } || return 1
+}
+
+setupStorage() {
+  printf "${BRIGHT_GREEN}====> ${BLUE}Setting up storage..${NC}\n"
+  printf "${BRIGHT_CYAN}Please accept the permissions popup.\n"
+  termux-setup-storage
 }
 
 pkgcheck() {
@@ -209,6 +271,9 @@ setupConf() {
 }
 
 finishInstall() {
+
+  showbanner
+  setupStorage
 
   clear
   printf "${BLUE}$INSTALLCOMP"

@@ -3,7 +3,7 @@
 
 if [[ "$OSTYPE" == "linux-android" ]]; then
 
-ZDIR="$HOME/zsh.d/"
+ZDIR="$HOME/.zsh.d/"
 
 izload() {
   local mod="$1"
