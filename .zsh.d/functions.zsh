@@ -1300,7 +1300,7 @@ return 0
     --nuke|--wipe|--redo-all)
 
       local sure
-      warn "\nAre you sure? this will erase /data/local/tmp/sh and revert all changes made by su [y/N]: "
+      warn "\nAre you sure?\nthis will erase /data/local/tmp/sh and revert all changes made by su [y/N]: "
       read -r sure
       case "$sure" in
         y|Y)
