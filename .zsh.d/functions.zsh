@@ -336,11 +336,11 @@ fz() { ## finds patterns in the ZSH configuration directory
         ff -N $ZDIR/unfunctions.zsh "$regex"
      ;;
       z|zsh|zs|zshrc)
-        ff -N $HOME/.zshrc "$regex"
+        ff -N $ZFILE "$regex"
       ;;
      all)
        local every_file;
-       for every_file in $ZDIR/* $HOME/.zshrc; do
+       for every_file in $ZDIR/* $ZFILE; do
          if [[ -z "$regex" ]]; then
            ff -N "$every_file"
          else
@@ -392,11 +392,11 @@ fz() { ## finds patterns in the ZSH configuration directory
         ff $ZDIR/unfunctions.zsh "$argv"
      ;;
       z|zsh|zs|zshrc)
-        ff $HOME/.zshrc "$argv"
+        ff $ZFILE "$argv"
       ;;
      all)
        local every_file;
-       for every_file in $ZDIR/* $HOME/.zshrc; do
+       for every_file in $ZDIR/* $ZFILE; do
          if [[ -z "$argv" ]]; then
            ff "$every_file"
          else
@@ -1692,7 +1692,7 @@ nd() {
   $EDITOR $ZDIR/unfunctions.zsh
   ;;
   z|zsh|zs|zshrc)
-  $EDITOR $HOME/.zshrc
+  $EDITOR $ZFILE
   ;;
   *)
     err "Invalid option, \"$file_opt\". pass -h to show the help screen.\n"
@@ -1724,7 +1724,7 @@ fcn() {
 }
 
 cczsh() {
-  ccont $HOME/.zshrc
+  ccont $ZFILE
 }
 
 fcount() {

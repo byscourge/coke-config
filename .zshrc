@@ -5,6 +5,7 @@ if [[ "$OSTYPE" == "linux-android" ]]; then # check if operating system is andro
 
 typeset -g ZDIR="$HOME/.zsh.d/" # set main configuration path variable
 typeset -g ZDIR_NAME="\$HOME/$(basename $ZDIR)/" # set string for scripts to use when showing ZDIR path
+typeset -g ZFILE="${ZDOTDIR:-$HOME}/.zshrc" # set reusable path for scripts
 
 izload() {
   local mod="$1"
