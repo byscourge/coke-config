@@ -2227,6 +2227,12 @@ the second flag is ${WHITE}--clean${NC}: remove trash/junk from the HOME directo
 
     home)
       if [[ -z "$2" ]]; then
+
+        local surely
+        prompt "Continue? [y/N]: "
+        read -r surely
+        [[ ! "$surely" =~ ^[yY]$ ]] && { w_info "\nAbort.\n"; return 1; }
+
         mkdir -p "$PREFIX/tmp/tmpBkDir" || {
           err "Failed to create tmp dir!\n"
           return 1
@@ -2243,6 +2249,12 @@ the second flag is ${WHITE}--clean${NC}: remove trash/junk from the HOME directo
       fi
         case "$2" in
           --clean)
+
+            local surely
+            prompt "Continue? [y/N]: "
+            read -r surely
+            [[ ! "$surely" =~ ^[yY]$ ]] && { w_info "\nAbort.\n"; return 1; }
+
             mkdir -p "$PREFIX/tmp/tmpBkDir" || {
               err "Failed to create tmp dir!\n"
               return 1
@@ -2270,7 +2282,7 @@ the second flag is ${WHITE}--clean${NC}: remove trash/junk from the HOME directo
     usr)
         local toobigusr
         info "PREFIX (usr) can grow uncontrollably large, continue with the compression? [y/N]: "
-        read -r "toobigusr"
+        read -r toobigusr
         case "$toobigusr" in
           y|Y)
             mkdir -p "$HOME/tmp/tmpBkDir" || {
@@ -2299,7 +2311,7 @@ the second flag is ${WHITE}--clean${NC}: remove trash/junk from the HOME directo
     all|full)
         local toobigusr
         info "Termux root (/data/data/com.termux/files/) can grow uncontrollably large, continue with the compression? [y/N]: "
-        read -r "toobigusr"
+        read -r toobigusr
         case "$toobigusr" in
           y|Y)
 
