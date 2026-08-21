@@ -322,11 +322,11 @@ finishInstall() {
 |                    Closing termux in:                     |
 -------------------------------------------------------------"
   sleep 2.5
-  printf "\n${BLUE}$asci3"
+  printf "\n${WHITE}$asci3"
   sleep 1
-  printf "\n${BLUE}$asci2"
+  printf "\n${WHITE}$asci2"
   sleep 1
-  printf "\n${BLUE}$asci1"
+  printf "\n${WHITE}$asci1"
   sleep 1
   printf "${BRIGHT_WHITE}
 -------------------------------------------------------------
