@@ -270,13 +270,13 @@ pen() { ## print enviroment variables and find patterns in them
   fi
 }
 
-fz() { ## finds patterns in your ZSH config ( ~/.zsh.d// )
+fz() { ## finds patterns in the ZSH configuration directory
   local arg1="$1"
   if [[ -z "$arg1" ]]; then
     err "No operation given, pass -h for help.\n\n"
   elif [[ "$arg1" == "-h" ]]; then
     pf "
-    Find patterns in ~/.zsh.d/ files
+    Find patterns in $ZDIR_NAME files
     Usage:
 
     ${BLUE}fz func \"example\"${NC} find a pattern in functions
@@ -336,7 +336,7 @@ fz() { ## finds patterns in your ZSH config ( ~/.zsh.d// )
         ff -N $ZDIR/unfunctions.zsh "$regex"
      ;;
       z|zsh|zs|zshrc)
-        ff -N ~/.zshrc "$regex"
+        ff -N $HOME/.zshrc "$regex"
       ;;
      all)
        local every_file;
@@ -392,7 +392,7 @@ fz() { ## finds patterns in your ZSH config ( ~/.zsh.d// )
         ff $ZDIR/unfunctions.zsh "$argv"
      ;;
       z|zsh|zs|zshrc)
-        ff ~/.zshrc "$argv"
+        ff $HOME/.zshrc "$argv"
       ;;
      all)
        local every_file;
@@ -1598,11 +1598,11 @@ hmal() { # "how many aliases (?)"
   local arg1="$1"
   local alias_count=$(fz -N al|wcl)
   if [[ -z "$arg1" ]]; then
-    pf "you have $alias_count aliases in your \$(~/.zsh.d//aliases.zsh)! \n"
+    pf "you have $alias_count aliases in your \$($ZDIR_NAME/aliases.zsh)! \n"
   elif [[ "$arg1" == "-s" ]]; then
     pf "$alias_count"
   else
-    pf "you have $alias_count aliases in your \$(~/.zsh.d//aliases.zsh)! \n"
+    pf "you have $alias_count aliases in your \$($ZDIR_NAME/aliases.zsh)! \n"
   fi
 }
 
@@ -1610,11 +1610,11 @@ hmaf() { # "how many functions (?)"
   local arg1="$1"
   local func_count=$(fz -N fun ".*\(\).*\{"|wcl)
   if [[ -z "$arg1" ]]; then
-    pf "you have $func_count functions in your \$(~/.zsh.d//functions.zsh)! \n"
+    pf "you have $func_count functions in your \$($ZDIR_NAME/functions.zsh)! \n"
   elif [[ "$arg1" == "-s" ]]; then
     pf "$func_count"
   else
-    pf "you have $func_count functions in your \$(~/.zsh.d//functions.zsh)! \n"
+    pf "you have $func_count functions in your \$($ZDIR_NAME/functions.zsh)! \n"
   fi
 }
 
@@ -1692,7 +1692,7 @@ nd() {
   $EDITOR $ZDIR/unfunctions.zsh
   ;;
   z|zsh|zs|zshrc)
-  $EDITOR ~/.zshrc
+  $EDITOR $HOME/.zshrc
   ;;
   *)
     err "Invalid option, \"$file_opt\". pass -h to show the help screen.\n"
@@ -1724,7 +1724,7 @@ fcn() {
 }
 
 cczsh() {
-  ccont ~/.zshrc
+  ccont $HOME/.zshrc
 }
 
 fcount() {

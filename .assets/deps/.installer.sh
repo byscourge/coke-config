@@ -10,45 +10,82 @@ nanodate="$(date +%N)"
 cd "$HOME"/..
 currentworkingdir="$(realpath $HOME/..)"
 
-############# ============> FUNCTIONS
+########################################
+#              COLORS                  #
+########################################
 
-# COLORS
+# color functions & color codes
+# foreground color = \033[38;2
+# background color = \033[48;2
+
+# non-colors
 BOLD=$'\033[1m'
-GREEN=$'\033[38;2;150;230;150m'
-BRIGHT_GREEN=$'\033[1m\033[38;2;0;255;0m'
-RED=$'\033[38;2;240;98;107m'
-BRIGHT_RED=$'\033[1m\033[38;2;255;0;0m'
-ORANGE=$'\033[38;2;255;120;0m'
-CYAN=$'\033[38;2;0;250;255m'
-BRIGHT_CYAN=$'\033[1m\033[38;2;0;255;255m'
-WHITE=$'\033[38;2;255;255;255m'
-BRIGHT_WHITE="\033[1m\033[38;2;255;255;255m"
-BLUE=$'\033[1m\033[38;2;125;167;205m'
-GRAY=$'\033[38;2;69;79;96m'
-PINK=$'\033[38;2;255;0;255m'
-
 NC=$'\033[0m'
 
+# colors
+GREEN=$'\033[38;2;150;230;150m'
+BRIGHT_GREEN=$'\033[1m\033[38;2;0;255;0m'
 
-BANNER="           _                           __ _
-  ___ ___ | | _____    ___ ___  _ __  / _(_) __ _
- / __/ _ \| |/ / _ \  / __/ _ \| '_ \| |_| |/ _\` |
-| (_| (_) |   <  __/ | (_| (_) | | | |  _| | (_| |
- \___\___/|_|\_\___|  \___\___/|_| |_|_| |_|\__, |
-                                            |___/
- _           _        _ _       _   _               _
-(_)_ __  ___| |_ __ _| | | __ _| |_(_) ___  _ __   | |
-| | '_ \/ __| __/ _\` | | |/ _\` | __| |/ _ \| '_ \  | |
-| | | | \__ \ || (_| | | | (_| | |_| | (_) | | | | |_|
-|_|_| |_|___/\__\__,_|_|_|\__,_|\__|_|\___/|_| |_| (_)\n\n"
+ORANGE=$'\033[38;2;255;120;0m'
+RED=$'\033[38;2;240;98;107m'
+BRIGHT_RED=$'\033[1m\033[38;2;255;0;0m'
+
+BLUE=$'\033[1m\033[38;2;125;167;205m'
+CYAN=$'\033[38;2;0;250;255m'
+BRIGHT_CYAN=$'\033[1m\033[38;2;0;255;255m'
+
+WHITE=$'\033[38;2;255;255;255m'
+BRIGHT_WHITE=$'\033[1m\033[38;2;255;255;255m'
+
+PINK=$'\033[38;2;255;0;255m'
+PURPLE=$'\033[38;2;150;150;255m'
+DARK_PURPLE=$'\033[38;2;130;85;255m'
+
+GRAY=$'\033[38;2;69;79;96m'
+BLACK=$'\033[38;2;0;0;0m'
+
+# background colors
+BG_GREEN=$'\033[48;2;150;230;150m'
+BG_BRIGHT_GREEN=$'\033[1m\033[48;2;0;255;0m'
+
+BG_ORANGE=$'\033[48;2;255;120;0m'
+BG_RED=$'\033[48;2;240;98;107m'
+BG_BRIGHT_RED=$'\033[1m\033[48;2;255;0;0m'
+
+BG_BLUE=$'\033[1m\033[48;2;125;167;205m'
+BG_CYAN=$'\033[48;2;0;250;255m'
+BG_BRIGHT_CYAN=$'\033[1m\033[48;2;0;255;255m'
+
+BG_WHITE=$'\033[48;2;255;255;255m'
+BG_BRIGHT_WHITE=$'\033[1m\033[48;2;255;255;255m'
+
+BG_PINK=$'\033[48;2;255;0;255m'
+BG_PURPLE=$'\033[48;2;150;150;255m'
+BG_DARK_PURPLE=$'\033[48;2;130;85;255m'
+
+BG_GRAY=$'\033[48;2;69;79;96m'
+BG_BLACK=$'\033[48;2;0;0;0m'
+
+
+BANNER="
+----------------------------------------------------------------------
+|  ####   ####  #    # ######     ####   ####  #    # ###### #  #### |
+| #    # #    # #   #  #         #    # #    # ##   # #      # #    #|
+| #      #    # ####   #####     #      #    # # #  # #####  # #     |
+| #      #    # #  #   #         #      #    # #  # # #      # #  ###|
+| #    # #    # #   #  #         #    # #    # #   ## #      # #    #|
+|  ####   ####  #    # ######     ####   ####  #    # #      #  #### |
+----------------------------------------------------------------------\n"
 
 INSTALLCOMP="
- ___           _        _ _                             _      _         _
-|_ _|_ __  ___| |_ __ _| | |   ___ ___  _ __ ___  _ __ | | ___| |_ ___  | |
- | || '_ \/ __| __/ _\` | | |  / __/ _ \| '_ \` _ \| '_ \| |/ _ \ __/ _ \ | |
- | || | | \__ \ || (_| | | | | (_| (_) | | | | | | |_) | |  __/ ||  __/ |_|
-|___|_| |_|___/\__\__,_|_|_|  \___\___/|_| |_| |_| .__/|_|\___|\__\___| (_)
-                                                 |_|"
+-----------------------------------------------------------------------------             |                                                                       ### |
+| ######    #    #    #    #     ####     #    #    ######    #####     ### |
+| #         #    ##   #    #    #         #    #    #         #    #    ### |
+| #####     #    # #  #    #     ####     ######    #####     #    #     #  |
+| #         #    #  # #    #         #    #    #    #         #    #        |
+| #         #    #   ##    #    #    #    #    #    #         #    #    ### |
+| #         #    #    #    #     ####     #    #    ######    #####     ### |
+-----------------------------------------------------------------------------\n"
 
 
 
@@ -78,7 +115,9 @@ asci1="
 #####\n"
 
 
-## ============================
+########################################
+#             FUNCTIONS                #
+########################################
 
 termux-setup-storage() {
 
@@ -139,7 +178,7 @@ termux-setup-storage() {
 
 showbanner() {
   clear
-  printf "${CYAN}${BANNER}${NC}\n\n"
+  printf "${BLUE}${BANNER}${NC}\n\n"
 }
 
 runsilent() {
@@ -151,7 +190,7 @@ runsilent() {
 }
 
 setupStorage() {
-  printf "${BRIGHT_GREEN}====> ${BLUE}Setting up storage..${NC}\n"
+  printf "${BRIGHT_GREEN}====> ${PURPLE}Setting up storage..${NC}\n"
   printf "${BRIGHT_CYAN}Please accept the permissions popup.\n"
   termux-setup-storage
 }
@@ -181,18 +220,18 @@ pkgcheck() {
 
 installDeps() {
   showbanner
-  printf "${BRIGHT_GREEN}====> ${BLUE}Checking package manager..\n${NC}"
+  printf "${BRIGHT_GREEN}====> ${PURPLE}Checking package manager..\n${NC}"
   pkgcheck
   case "$?" in
     1)
-      printf "${BRIGHT_GREEN}====> ${BLUE}Package manager is pacman!\n${NC}"
-      printf "${BRIGHT_GREEN}====> ${BLUE}Installing dependencies..\n${NC}"
+      printf "${BRIGHT_GREEN}====> ${PURPLE}Package manager is pacman!\n${NC}"
+      printf "${BRIGHT_GREEN}====> ${PURPLE}Installing dependencies..\n${NC}"
       sleep 1
       sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.pacmandeps.sh) && return 0
       ;;
     2)
-      printf "${BRIGHT_GREEN}====> ${BLUE}Package manager is apt!\n${NC}"
-      printf "${BRIGHT_GREEN}====> ${BLUE}Installing dependencies..\n${NC}"
+      printf "${BRIGHT_GREEN}====> ${PURPLE}Package manager is apt!\n${NC}"
+      printf "${BRIGHT_GREEN}====> ${PURPLE}Installing dependencies..\n${NC}"
       sleep 1
       sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.aptdeps.sh) && return 0
       ;;
@@ -201,18 +240,18 @@ installDeps() {
       exit 1
       ;;
     4)
-      printf "${BRIGHT_GREEN}====> ${BLUE}It seems like you have two package managers.\nWould you like to use ${BRIGHT_CYAN}apt${BLUE} or${BRIGHT_CYAN} pacman${BLUE}?\n${NC}"
+      printf "${BRIGHT_GREEN}====> ${PURPLE}It seems like you have two package managers.\nWould you like to use ${BRIGHT_CYAN}apt${BLUE} or${BRIGHT_CYAN} pacman${BLUE}?\n${NC}"
       printf "${NC}[ apt / pacman ]: "
       packageans=""
       read -r packageans
       case "$packageans" in
         apt)
-          printf "${BRIGHT_GREEN}====> ${BLUE}Installing dependencies..\n${NC}"
+          printf "${BRIGHT_GREEN}====> ${PURPLE}Installing dependencies..\n${NC}"
           sleep 1
           sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.aptdeps.sh) && return 0
          ;;
         pacman)
-          printf "${BRIGHT_GREEN}====> ${BLUE}Installing dependencies..\n${NC}"
+          printf "${BRIGHT_GREEN}====> ${PURPLE}Installing dependencies..\n${NC}"
           sleep 1
           sh <(curl -fsSL https://raw.githubusercontent.com/byscourge/coke-config/master/.assets/deps/.pacmandeps.sh) && return 0
           ;;
@@ -228,7 +267,7 @@ installDeps() {
 backupHome() {
   [[ -d /data/data/com.termux/files/backup_home/ ]] || mkdir -p /data/data/com.termux/files/backup_home/
   showbanner
-  printf "${BRIGHT_GREEN}====> ${BLUE}Backing up your home directory..\n${NC}"
+  printf "${BRIGHT_GREEN}====> ${PURPLE}Backing up your home directory..\n${NC}"
   sleep 1.5
   cp -av "$HOME" "/data/data/com.termux/files/backup_home/${insdate}_home" && \
     printf "${BRIGHT_GREEN}====> ${GREEN}Success! HOME was copied to:\n${WHITE}/data/data/com.termux/files/backup_home/${insdate}_home${NC}"
@@ -237,7 +276,7 @@ backupHome() {
 
 installDotfiles() {
   showbanner
-  printf "${BRIGHT_GREEN}====> ${BLUE}Installing coke-config..\n${NC}"
+  printf "${BRIGHT_GREEN}====> ${PURPLE}Installing coke-config..\n${NC}"
 
   nanodatebk="$currentworkingdir/$nanodate"
 
@@ -247,7 +286,7 @@ installDotfiles() {
     exit 1
   }
 
-  printf "${BRIGHT_GREEN}====> ${BLUE}Replacing HOME..\n${NC}"
+  printf "${BRIGHT_GREEN}====> ${PURPLE}Replacing HOME..\n${NC}"
   sleep 1
 
   rm -rf "$nanodatebk/.git"
@@ -260,11 +299,11 @@ installDotfiles() {
 
 setupConf() {
   showbanner
-  printf "${BRIGHT_GREEN}====> ${BLUE}Changing default shell to ZSH..\n${NC}"
+  printf "${BRIGHT_GREEN}====> ${PURPLE}Changing default shell to ZSH..\n${NC}"
   sleep 1
   chsh -s zsh
-  printf "${BRIGHT_GREEN}====> ${BLUE}Installing ZINIT..\n"
-  printf "${BRIGHT_GREEN}====> ${BLUE}Setting up neovim..${NC}\n"
+  printf "${BRIGHT_GREEN}====> ${PURPLE}Installing ZINIT..\n"
+  printf "${BRIGHT_GREEN}====> ${PURPLE}Setting up neovim..${NC}\n"
   sleep 1
   cd "$HOME"
   zsh -c -i "nvim --headless '+Lazy! install' +qa ; exit"
@@ -276,11 +315,12 @@ finishInstall() {
   setupStorage
 
   clear
-  printf "${BLUE}$INSTALLCOMP"
+  printf "${CYAN}$INSTALLCOMP"
   printf "\n\n\n\n"
   printf "${BRIGHT_WHITE}
-  Closing termux in:
------------------------"
+-------------------------------------------------------------
+|                    Closing termux in:                     |
+-------------------------------------------------------------"
   sleep 2.5
   printf "\n${BLUE}$asci3"
   sleep 1
@@ -289,13 +329,16 @@ finishInstall() {
   printf "\n${BLUE}$asci1"
   sleep 1
   printf "${BRIGHT_WHITE}
-         Please reopen termux!.
-----------------------------------------"
+-------------------------------------------------------------
+|                   Please reopen termux!.                  |
+-------------------------------------------------------------"
   sleep 2.5
   pkill -9 -f com.termux
 }
 
-############# ============> FUNCTIONS END
+########################################
+#           FUNCTIONS END              #
+########################################
 
 answer=""
 showbanner
@@ -304,17 +347,17 @@ printf "
 ${RED}Warning: this will overwrite all files in your home directory,${NC}
 ${BLUE}BUT your old home will be backed up & stored at:${NC}
 
-${WHITE}/data/data/com.termux/files/backup_home/${insdate}_home${NC}
+${PURPLE}/data/data/com.termux/files/backup_home/${insdate}_home${NC}
 
 ${BRIGHT_WHITE}make sure to WRITE DOWN the path above as it is the only backup of your current configurations.${NC}
 
-Your current home is: ${WHITE}$HOME${NC}\n"
-printf "\n${CYAN}Continue with installation? [y/N]:${NC} "
+Your current home is: ${PURPLE}$HOME${NC}\n"
+printf "\n${DARK_PURPLE}Continue with installation? [y/N]:${NC} "
 read -r answer
 case "$answer" in
   y|Y)
     really=""
-    printf "\n${CYAN}Are you sure? [y/N]:${NC} "
+    printf "\n${DARK_PURPLE}Are you sure? [y/N]:${NC} "
     read -r really
     case "$really" in
       y|Y)
