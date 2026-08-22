@@ -426,9 +426,8 @@ su() { ## emulates a semi-root enviroment with shell(2000) privileges via shizuk
   fi
   
   local shizuku.IsRunning() {
-    if ! {rish -c "return 0"} &>/dev/null; then
-      err "rish failed to run. Shizuku may not be installed, configured properly, or running.\n"
-      return 255
+    if ! {rish -c "return 0"}; then
+      return 1
     else
       return 0;
     fi
@@ -613,6 +612,7 @@ local boot.InstallTree() {
   }
 
 local runEnviroment() {
+  if [[ -z "$1" ]]; then
     rish -c "\
     export PATH=/data/local/tmp/sh/usr/bin/:\$PATH && \
     export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
@@ -630,6 +630,63 @@ local runEnviroment() {
     cd /
     chmod 755 -R /data/local/tmp/sh
     exec bash'"
+  else
+    if [[ "$1" == "." ]]; then
+      rish -c "\
+      export PATH=/data/local/tmp/sh/usr/bin/:\$PATH && \
+      export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
+      exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
+      export PATH=/data/local/tmp/sh/usr/bin:\$PATH
+      export HOME=/data/local/tmp/sh/home
+      export PREFIX=/data/local/tmp/sh/usr
+      export SHELL=/data/local/tmp/sh/usr/bin/bash
+      export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
+      export termuxPrefix=/data/data/com.termux/files/usr
+      export TERM=xterm-256color
+      export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
+      export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
+      cd $(pwd)
+      chmod 755 -R /data/local/tmp/sh
+      exec bash'"
+    else
+      if [[ ! "$1" =~ ^\/ ]]; then
+        rish -c "\
+        export PATH=/data/local/tmp/sh/usr/bin/:\$PATH && \
+        export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
+        exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
+        export PATH=/data/local/tmp/sh/usr/bin:\$PATH
+        export HOME=/data/local/tmp/sh/home
+        export PREFIX=/data/local/tmp/sh/usr
+        export SHELL=/data/local/tmp/sh/usr/bin/bash
+        export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
+        export termuxPrefix=/data/data/com.termux/files/usr
+        export TERM=xterm-256color
+        export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
+        export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
+        cd $(pwd)/$1
+        chmod 755 -R /data/local/tmp/sh
+        exec bash'"
+      else
+        rish -c "\
+        export PATH=/data/local/tmp/sh/usr/bin/:\$PATH && \
+        export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
+        exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
+
+        export PATH=/data/local/tmp/sh/usr/bin:\$PATH
+        export HOME=/data/local/tmp/sh/home
+        export PREFIX=/data/local/tmp/sh/usr
+        export SHELL=/data/local/tmp/sh/usr/bin/bash
+        export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
+        export termuxPrefix=/data/data/com.termux/files/usr
+        export TERM=xterm-256color
+        export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
+        export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
+        cd $1
+        chmod 755 -R /data/local/tmp/sh
+        exec bash'"
+      fi
+    fi
+  fi
 }
 
 local initEnviroment() {
@@ -1048,7 +1105,7 @@ local initEnviroment() {
       printf "\n\n"
     fi
 
-      ct=$HOME/comTermux/
+      ct=/data/data/com.termux/
       ctf=$ct/files/
       etc=$PREFIX/etc/
       bash=$etc/bash.bashrc
@@ -1058,11 +1115,11 @@ local initEnviroment() {
 
       if (($permsAre == $permsShouldBeOctal)); then
         config::LsColors
-        runEnviroment
+        runEnviroment "$*"
         return 0
       else
         fix::bash.bashrc\\ENOPERM && \
-        runEnviroment
+        runEnviroment "$*"
         return 0
       fi
   }
@@ -1158,7 +1215,6 @@ fi
 
 if [[ -n "$1" ]]; then
 
-  if [[ "$1" == -*  ]]; then
   case "$1" in
 
     -u|--uninstall)
@@ -1352,7 +1408,7 @@ return 0
 
         esac ;;
 
-    --quick-run-no-validation) runEnviroment ;;
+    --quick-run-no-validation) shift; runEnviroment "$*" ;;
 
     --verify|-vrf)
 
@@ -1399,11 +1455,15 @@ ${WHITE}Docs${NC}:
 
         ;;
 
-    *) err "Invalid option: \"$1\"; run su -h to see valid flags.\n"; return 1 ;;
+    *)
+      if already:Installed; then
+        boot.Init+Validation "$*"
+        return
+      fi
+      ;;
     
 
   esac
- fi
 fi
 
         # end
@@ -1454,10 +1514,7 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
 }
 
 fsu() {
-  [[ -z "$1" ]] && su --quick-run-no-validation || {
-    [[ "$1" == "-h" || "$1" == "--help" ]] && { su -fsuh ; return ; }
-    sudo -f "$*"
-  }
+  su --quick-run-no-validation "$*"
 }
 
 fsudo() {
@@ -1468,10 +1525,6 @@ fsudo() {
   }
 
   sudo -f "$*"
-}
-
-so() {
-  fsu "$*"
 }
 
 pa() {
