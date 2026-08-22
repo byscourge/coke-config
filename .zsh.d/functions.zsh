@@ -1514,6 +1514,7 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
 }
 
 fsu() {
+  [[ "$1" == "-h" || "$1" == "--help" ]] && { su -fsuh ; return ; }
   su --quick-run-no-validation "$*"
 }
 
