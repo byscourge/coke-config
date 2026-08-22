@@ -718,7 +718,7 @@ local initEnviroment() {
       } && {
           great "Success!"
           ok " The Shell enviroment was sucessfully installed."
-          ok "\nyou may now run ${BRIGHT_CYAN}\"su\"${GREEN} or ${BRIGHT_CYAN}\"so\"${GREEN} to login.\n\n"
+          ok "\nyou may now run ${BRIGHT_CYAN}\"su\"${GREEN} or ${BRIGHT_CYAN}\"fsu\"${GREEN} to login.\n\n"
         } && return 0 || return 1
 }
 
@@ -1271,7 +1271,7 @@ ${BLUE}pseudo SuperUser via shizuku on termux${NC}
 
       ${BLUE}-c${NC} [Calls ${CYAN}sudo${NC} (su -c command)]
 
-      ${CYAN}\"so\"${NC} command: run su -soh for more info.
+      \"${CYAN}fsu${NC}\"/\"${CYAN}fsudo${NC}\" commands: run su -fsuh for more info.
 
       ${BLUE}-h/--help${WHITE} [Show this help screen]${NC}
 \n"
@@ -1374,23 +1374,27 @@ return 0
       fi
       ;;
 
-      -soh)
+      -fsuh)
 
 printf "
-      ${CYAN}so${NC}:
+      ${CYAN}fsu/fsudo${NC}:
 
-        ${WHITE}a wrapper between su and sudo that speeds up command execution.${NC}
+${BLUE} ${BRIGHT_CYAN}fsu${NC} & ${BRIGHT_CYAN}fsudo${BLUE} are wrappers around ${CYAN}su${NC} and ${CYAN}sudo${BLUE} that speed up command execution.${NC}
 
-        Usage:
+${WHITE}Docs${NC}:
 
-        run ${CYAN}\"so\"${NC} with no arguments & fsu runs, putting you in su quickly
-        run ${CYAN}\"so\"${NC} with arguments and sudo runs,
-        (examples: ${BLUE}so ls${NC}, ${BLUE}so id${NC}, ${BLUE}so vim /some/config/file${NC})
+        \"${BRIGHT_CYAN}fsu${NC}\" with no arguments; su skips enviroment verification and enters the enviroment with improved speeds.
+
+        \"${BRIGHT_CYAN}fsudo${NC}\" with arguments; sudo runs while skipping enviroment verification and runs sudo commands with improved speeds.
+
+        examples: ${BLUE}fsudo ls${NC}, ${BLUE}fsudo id${NC}, ${BLUE}fsudo vim /some/config/file${NC}
 
 
-        the reason as to why the ${CYAN}\"so\"${NC} command runs faster than su/sudo is because it skips verification entirely and just executes, so in turn, ${WHITE}make sure that su() is installed properly${NC} [${CYAN}su -vrf${NC}].
+        the reasons why the \"${BRIGHT_CYAN}fsu${NC}\" and \"${BRIGHT_CYAN}fsudo${NC}\" commands run faster than su/sudo are because:
+        they skips verification entirely and execute commands directly.
 
-        ${CYAN}so ${WHITE}is reccomended to use instead of ${CYAN}su${NC} & ${CYAN}sudo ${WHITE}if the su enviroment is installed.${NC}
+        so in turn, ${BRIGHT_WHITE}make sure that su() is installed properly${NC} [${CYAN}su -vrf${NC}].
+        ${BRIGHT_CYAN}fsu ${NC}and ${BRIGHT_CYAN}fsudo${WHITE} are reccomended to use over ${CYAN}su${NC} & ${CYAN}sudo ${WHITE}if the su enviroment is installed.${NC}
         \n"
 
         ;;
@@ -1408,12 +1412,12 @@ fi
 }
 
 sudo() { ## emulates a temporary semi-root shell, based off of su();
-    if [ $# -eq 0 ]; then
-        echo "E: no operation specified"
+    if [[ -z "$1" ]]; then
+        err "E: no operation specified.\n"
         return 1
     fi
 
-    if [ "$1" = "su" ]; then
+    if [[ "$1" == "su" ]]; then
         su
         return
     fi
@@ -1443,16 +1447,27 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
              alias ls="ls --color=auto"
              exec eval "$*"' -- "$*"
     else; 
-      critical "Uh-Oh! su is not installed and sudo couldnt run,\n"
-      info "but to run sudo commands anyways, use the ${CYAN}so${BLUE} command with arguments. (${CYAN}su -soh${NC} for more info)\n"
+      err "Uh-Oh! su is not installed and sudo couldnt run.\n"
+      debug "but to run sudo commands anyways, use the ${CYAN}fsu${BLUE} command with arguments. (${CYAN}su -fsuh${NC} for more info)\n"
     return 1
     fi
 }
 
 fsu() {
   [[ -z "$1" ]] && su --quick-run-no-validation || {
+    [[ "$1" == "-h" || "$1" == "--help" ]] && { su -fsuh ; return ; }
     sudo -f "$*"
   }
+}
+
+fsudo() {
+  [[ "$1" == "-h" || "$1" == "--help" ]] && { su -fsuh ; return ; }
+  [[ -z "$1" ]] && {
+    err "E: no operation specified.\n"
+    return 1
+  }
+
+  sudo -f "$*"
 }
 
 so() {
