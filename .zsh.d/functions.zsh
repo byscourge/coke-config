@@ -1435,22 +1435,21 @@ return 0
 printf "
       ${CYAN}fsu/fsudo${NC}:
 
-${BLUE} ${BRIGHT_CYAN}fsu${NC} & ${BRIGHT_CYAN}fsudo${BLUE} are wrappers around ${CYAN}su${NC} and ${CYAN}sudo${BLUE} that speed up command execution.${NC}
+${BRIGHT_CYAN}fsu${NC} & ${BRIGHT_CYAN}fsudo${BLUE} are wrappers around ${CYAN}su${NC} and ${CYAN}sudo${BLUE} that speed up command execution by skipping enviroment verification.${NC}
 
 ${WHITE}Docs${NC}:
 
         \"${BRIGHT_CYAN}fsu${NC}\" with no arguments; su skips enviroment verification and enters the enviroment with improved speeds.
+        \"${BRIGHT_CYAN}fsu${NC}\" can also accept a PATH as an argument, so you can run:
+        ${BLUE}fsu .${NC}, ${BLUE}fsu ..${NC}, ${BLUE}fsu localdir${NC}, ${BLUE}fsu /some/full/path/subdir${NC}.
 
         \"${BRIGHT_CYAN}fsudo${NC}\" with arguments; sudo runs while skipping enviroment verification and runs sudo commands with improved speeds.
 
         examples: ${BLUE}fsudo ls${NC}, ${BLUE}fsudo id${NC}, ${BLUE}fsudo vim /some/config/file${NC}
 
 
-        the reasons why the \"${BRIGHT_CYAN}fsu${NC}\" and \"${BRIGHT_CYAN}fsudo${NC}\" commands run faster than su/sudo are because:
-        they skips verification entirely and execute commands directly.
-
-        so in turn, ${BRIGHT_WHITE}make sure that su() is installed properly${NC} [${CYAN}su -vrf${NC}].
-        ${BRIGHT_CYAN}fsu ${NC}and ${BRIGHT_CYAN}fsudo${WHITE} are reccomended to use over ${CYAN}su${NC} & ${CYAN}sudo ${WHITE}if the su enviroment is installed.${NC}
+${BRIGHT_CYAN}fsu ${NC}and ${BRIGHT_CYAN}fsudo${WHITE} are reccomended to use over ${CYAN}su${NC} & ${CYAN}sudo ${WHITE}if the su enviroment is installed.${NC}
+${BRIGHT_WHITE}to avoid any errors before using fsu/fsudo, make sure that su() is installed properly ${BLUE}using the command${NC} [  ${CYAN}su -vrf${NC}  ].
         \n"
 
         ;;
