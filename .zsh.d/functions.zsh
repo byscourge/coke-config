@@ -1665,7 +1665,7 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
              exec eval "$*"' -- "$*"
     else; 
       err "Uh-Oh! su is not installed and sudo couldnt run.\n"
-      debug "but to run sudo commands anyways, use the ${CYAN}fsu${BLUE} command with arguments. (${CYAN}su -fsuh${NC} for more info)\n"
+      debug "but to run sudo commands anyways, use the ${CYAN}fsudo${BLUE} command. (${CYAN}su -fsuh${NC} for more info)\n"
     return 1
     fi
 }
