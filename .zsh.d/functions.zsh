@@ -1403,11 +1403,12 @@ if [[ -n "$1" ]]; then
       if already:Installed; then
         w_info "Shell enviroment is already installed, run su -r/--reinstall if you need to reinstall it.\n"
       else
-        warn "\nThis will reinstall all files in the shell enviroment, continue? [y/N]: "
+        prompt "\nContinue? [y/N]: "
         local confirm
         read -r confirm
         case "$confirm" in
           y|Y)
+            printf "\n"
             boot.Heal
             ;;
           *)
