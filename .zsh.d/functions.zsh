@@ -1640,6 +1640,11 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
         return
     fi
 
+    if [[ "$1" =~ \-.* ]]; then
+      su "$@"
+      return
+    fi
+
     if [[ "$1" == "-f" ]]; then
     shift;
       rish -c 'export PATH=/data/local/tmp/sh/usr/bin:$PATH && \
@@ -1664,6 +1669,7 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
              export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
              alias ls="ls --color=auto"
              exec eval "$*"' -- "$*"
+             return
     else; 
       err "Uh-Oh! su is not installed and sudo couldnt run.\n"
       debug "but to run sudo commands anyways, use the ${CYAN}fsudo${BLUE} command. (${CYAN}su -fsuh${NC} for more info)\n"
@@ -1672,15 +1678,23 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
 }
 
 fsu() {
-  [[ "$1" == "-h" || "$1" == "--help" ]] && { su -fsuh ; return ; }
-  runExecEnviroment "$*"
+  if [[ "$1" =~ \-.* ]]; then
+    su "$@"
+  else
+    runExecEnviroment "$*"
+  fi
 }
 
 fsudo() {
-  [[ "$1" == "-h" || "$1" == "--help" ]] && { su -fsuh ; return ; }
+  
   [[ -z "$1" ]] && {
     err "E: no operation specified.\n"
     return 1
+  }
+
+  [[ "$1" =~ \-.* ]] && {
+    su "$@"
+    return
   }
 
   sudo -f "$*"
