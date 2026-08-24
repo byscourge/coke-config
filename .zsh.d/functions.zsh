@@ -1640,9 +1640,15 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
         return
     fi
 
-    if [[ "$1" =~ \-.* ]]; then
-      su "$@"
-      return
+    if [[ "$1" =~ ^\-.* ]]; then
+      case "$1" in
+        -f)
+          ;;
+        *)
+          su "$@"
+          return
+          ;;
+      esac
     fi
 
     if [[ "$1" == "-f" ]]; then
@@ -1678,7 +1684,7 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
 }
 
 fsu() {
-  if [[ "$1" =~ \-.* ]]; then
+  if [[ "$1" =~ ^\-.* ]]; then
     su "$@"
   else
     runExecEnviroment "$*"
@@ -1692,7 +1698,7 @@ fsudo() {
     return 1
   }
 
-  [[ "$1" =~ \-.* ]] && {
+  [[ "$1" =~ ^\-.* ]] && {
     su "$@"
     return
   }
