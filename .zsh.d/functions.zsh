@@ -611,84 +611,6 @@ local boot.InstallTree() {
     rish -c "cp $(cat /data/data/com.termux/files/usr/tmp/bashLibraries) /data/local/tmp/sh/usr/lib"
   }
 
-local runEnviroment() {
-  if [[ -z "$1" ]]; then
-    rish -c "\
-    export PATH=/data/local/tmp/sh/usr/bin/:\$PATH && \
-    export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
-    exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
-
-    export PATH=/data/local/tmp/sh/usr/bin:\$PATH
-    export HOME=/data/local/tmp/sh/home
-    export PREFIX=/data/local/tmp/sh/usr
-    export SHELL=/data/local/tmp/sh/usr/bin/bash
-    export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
-    export termuxPrefix=/data/data/com.termux/files/usr
-    export TERM=xterm-256color
-    export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
-    export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
-    cd /
-    chmod 755 -R /data/local/tmp/sh
-    exec bash'"
-  else
-    if [[ "$1" == "." ]]; then
-      rish -c "\
-      export PATH=/data/local/tmp/sh/usr/bin/:\$PATH && \
-      export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
-      exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
-      export PATH=/data/local/tmp/sh/usr/bin:\$PATH
-      export HOME=/data/local/tmp/sh/home
-      export PREFIX=/data/local/tmp/sh/usr
-      export SHELL=/data/local/tmp/sh/usr/bin/bash
-      export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
-      export termuxPrefix=/data/data/com.termux/files/usr
-      export TERM=xterm-256color
-      export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
-      export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
-      cd $(pwd)
-      chmod 755 -R /data/local/tmp/sh
-      exec bash'"
-    else
-      if [[ ! "$1" =~ ^\/ ]]; then
-        rish -c "\
-        export PATH=/data/local/tmp/sh/usr/bin/:\$PATH && \
-        export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
-        exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
-        export PATH=/data/local/tmp/sh/usr/bin:\$PATH
-        export HOME=/data/local/tmp/sh/home
-        export PREFIX=/data/local/tmp/sh/usr
-        export SHELL=/data/local/tmp/sh/usr/bin/bash
-        export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
-        export termuxPrefix=/data/data/com.termux/files/usr
-        export TERM=xterm-256color
-        export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
-        export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
-        cd $(pwd)/$1
-        chmod 755 -R /data/local/tmp/sh
-        exec bash'"
-      else
-        rish -c "\
-        export PATH=/data/local/tmp/sh/usr/bin/:\$PATH && \
-        export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
-        exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
-
-        export PATH=/data/local/tmp/sh/usr/bin:\$PATH
-        export HOME=/data/local/tmp/sh/home
-        export PREFIX=/data/local/tmp/sh/usr
-        export SHELL=/data/local/tmp/sh/usr/bin/bash
-        export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
-        export termuxPrefix=/data/data/com.termux/files/usr
-        export TERM=xterm-256color
-        export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
-        export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
-        cd $1
-        chmod 755 -R /data/local/tmp/sh
-        exec bash'"
-      fi
-    fi
-  fi
-}
-
 local initEnviroment() {
 
   info "Initializing & prepping the Shell filesystem\n"
@@ -894,7 +816,7 @@ local initEnviroment() {
 
   local boot.Init() {
     boot.Install && \
-    runEnviroment && \
+    runExecEnviroment && \
     return 0;
   }
 
@@ -1121,11 +1043,11 @@ local initEnviroment() {
 
       if (($permsAre == $permsShouldBeOctal)); then
         config::LsColors
-        runEnviroment "$*"
+        runExecEnviroment "$*"
         return 0
       else
         openBashrc && \
-        runEnviroment "$*"
+        runExecEnviroment "$*"
         return 0
       fi
   }
@@ -1563,7 +1485,7 @@ return 0
 
         esac ;;
 
-    --quick-run-no-validation) shift; runEnviroment "$*" ;;
+    --quick-run-no-validation) shift; runExecEnviroment "$*" ;;
 
     --verify|-vrf)
 
@@ -1628,6 +1550,85 @@ fi
 # end
 }
 
+
+runExecEnviroment() {
+  if [[ -z "$1" ]]; then
+    rish -c "\
+    export PATH=/data/local/tmp/sh/usr/bin/:\$PATH && \
+    export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
+    exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
+
+    export PATH=/data/local/tmp/sh/usr/bin:\$PATH
+    export HOME=/data/local/tmp/sh/home
+    export PREFIX=/data/local/tmp/sh/usr
+    export SHELL=/data/local/tmp/sh/usr/bin/bash
+    export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
+    export termuxPrefix=/data/data/com.termux/files/usr
+    export TERM=xterm-256color
+    export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
+    export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
+    cd /
+    chmod 755 -R /data/local/tmp/sh
+    exec bash'"
+  else
+    if [[ "$1" == "." ]]; then
+      rish -c "\
+      export PATH=/data/local/tmp/sh/usr/bin/:\$PATH && \
+      export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
+      exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
+      export PATH=/data/local/tmp/sh/usr/bin:\$PATH
+      export HOME=/data/local/tmp/sh/home
+      export PREFIX=/data/local/tmp/sh/usr
+      export SHELL=/data/local/tmp/sh/usr/bin/bash
+      export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
+      export termuxPrefix=/data/data/com.termux/files/usr
+      export TERM=xterm-256color
+      export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
+      export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
+      cd $(pwd)
+      chmod 755 -R /data/local/tmp/sh
+      exec bash'"
+    else
+      if [[ ! "$1" =~ ^\/ ]]; then
+        rish -c "\
+        export PATH=/data/local/tmp/sh/usr/bin/:\$PATH && \
+        export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
+        exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
+        export PATH=/data/local/tmp/sh/usr/bin:\$PATH
+        export HOME=/data/local/tmp/sh/home
+        export PREFIX=/data/local/tmp/sh/usr
+        export SHELL=/data/local/tmp/sh/usr/bin/bash
+        export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
+        export termuxPrefix=/data/data/com.termux/files/usr
+        export TERM=xterm-256color
+        export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
+        export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
+        cd $(pwd)/$1
+        chmod 755 -R /data/local/tmp/sh
+        exec bash'"
+      else
+        rish -c "\
+        export PATH=/data/local/tmp/sh/usr/bin/:\$PATH && \
+        export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
+        exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
+
+        export PATH=/data/local/tmp/sh/usr/bin:\$PATH
+        export HOME=/data/local/tmp/sh/home
+        export PREFIX=/data/local/tmp/sh/usr
+        export SHELL=/data/local/tmp/sh/usr/bin/bash
+        export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
+        export termuxPrefix=/data/data/com.termux/files/usr
+        export TERM=xterm-256color
+        export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
+        export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
+        cd $1
+        chmod 755 -R /data/local/tmp/sh
+        exec bash'"
+      fi
+    fi
+  fi
+}
+
 sudo() { ## emulates a temporary semi-root shell, based off of su();
     if [[ -z "$1" ]]; then
         err "E: no operation specified.\n"
@@ -1672,7 +1673,7 @@ sudo() { ## emulates a temporary semi-root shell, based off of su();
 
 fsu() {
   [[ "$1" == "-h" || "$1" == "--help" ]] && { su -fsuh ; return ; }
-  su --quick-run-no-validation "$*"
+  runExecEnviroment "$*"
 }
 
 fsudo() {
