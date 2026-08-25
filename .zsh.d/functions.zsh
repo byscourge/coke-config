@@ -1706,48 +1706,49 @@ fsudo() {
   sudo -f "$*"
 }
 
-pa() {
-  if [[ "$PKG" == "pacman" ]]; then
+fzf_pkg() {
+  case "$PKG" in
 
-fzf_args=(
-  --multi
-  --preview 'pacman -Sii {1}'
-  --preview-label='alt-p: toggle description, alt-j/k: scroll, tab: multi-select, F11: maximize'
-  --preview-label-pos='bottom'
-  --preview-window 'down:65%:wrap'
-  --bind 'alt-p:toggle-preview'
-  --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
-  --bind 'alt-k:preview-up,alt-j:preview-down'
-  --color 'pointer:green,marker:green'
-)
+    pacman)
+      fzf_args=(
+        --multi
+        --preview 'pacman -Sii {1}'
+        --preview-label='alt-p: toggle description, alt-j/k: scroll, tab: multi-select, F11: maximize'
+        --preview-label-pos='bottom'
+        --preview-window 'down:65%:wrap'
+        --bind 'alt-p:toggle-preview'
+        --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
+        --bind 'alt-k:preview-up,alt-j:preview-down'
+        --color 'pointer:green,marker:green'
+      )
 
-pkg_names=$(pacman -Slq | fzf "${fzf_args[@]}")
+      pkg_names=$(pacman -Slq | fzf "${fzf_args[@]}")
 
-if [[ -n "$pkg_names" ]]; then
-  # Convert newline-separated selections to space-separated for yay
-  echo "$pkg_names" | tr '\n' ' ' | xargs pacman -S
-fi
-  elif [[ "$PKG" == "apt" ]]; then
-fzf_args=(
-  --multi
-  --preview 'apt-cache show {1}'
-  --preview-label='alt-p: toggle description, alt-j/k: scroll, tab: multi-select, F11: maximize'
-  --preview-label-pos='bottom'
-  --preview-window 'down:65%:wrap'
-  --bind 'alt-p:toggle-preview'
-  --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
-  --bind 'alt-k:preview-up,alt-j:preview-down'
-  --color 'pointer:green,marker:green'
-)
+      if [[ -n "$pkg_names" ]]; then
+        echo "$pkg_names" | tr '\n' ' ' | xargs pacman -S
+      fi
+      ;;
 
-# Get all package names from apt
-pkg_names=$(apt-cache pkgnames | fzf "${fzf_args[@]}")
+    apt)
+      fzf_args=(
+        --multi
+        --preview 'apt-cache show {1}'
+        --preview-label='alt-p: toggle description, alt-j/k: scroll, tab: multi-select, F11: maximize'
+        --preview-label-pos='bottom'
+        --preview-window 'down:65%:wrap'
+        --bind 'alt-p:toggle-preview'
+        --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
+        --bind 'alt-k:preview-up,alt-j:preview-down'
+        --color 'pointer:green,marker:green'
+      )
 
-if [[ -n "$pkg_names" ]]; then
-  # Convert newline-separated selections to space-separated for apt
-  echo "$pkg_names" | tr '\n' ' ' | xargs apt install
-fi
-fi
+      pkg_names=$(apt-cache pkgnames | fzf "${fzf_args[@]}")
+
+      if [[ -n "$pkg_names" ]]; then
+        echo "$pkg_names" | tr '\n' ' ' | xargs apt install
+      fi
+      ;;
+  esac
 }
 
 
