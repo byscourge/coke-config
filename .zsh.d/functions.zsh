@@ -422,7 +422,7 @@ su() { ## emulates a semi-root enviroment with shell(2000) privileges via shizuk
     :
   else
     critical "Even though this function is made to be used specifically with my dotfiles, which has rish preinstalled, rish doesnt exist.\n${BLUE}rish can be manually installed with shizuku, or by copying it from my dotfiles.${NC}\n"
-    return 255
+    return 1
   fi
   
   local shizuku.IsRunning() {
@@ -1025,7 +1025,7 @@ local initEnviroment() {
         if [[ ! -f "$files" ]]
         then
           critical "Uh-Oh! The needed files could not be created, the only explanation could be that shizuku failed. If shizuku works and this still failed, then you're on your own.\n"
-          return 74
+          return 1
         fi
       done
       ok "Success! Attempting to log into [shell(2000)], you wont see this message again unless the right conditions are met.\n"
@@ -1052,160 +1052,160 @@ local initEnviroment() {
       fi
   }
 
-boot.Heal() {
-  
-    if [[ -d /data/local/tmp/sh ]]; then
-      dlt=/data/local/tmp/sh
-    else
-      rish -c "mkdir /data/local/tmp/sh" && dlt=/data/local/tmp/sh
-    fi
+  boot.Heal() {
+    
+      if [[ -d /data/local/tmp/sh ]]; then
+        dlt=/data/local/tmp/sh
+      else
+        rish -c "mkdir /data/local/tmp/sh" && dlt=/data/local/tmp/sh
+      fi
 
-    shellDirs=(
-      $dlt/tmp
-      $dlt/usr/libexec
-      $dlt/usr/share/terminfo
-      $dlt/usr/share/terminfo/a
-      $dlt/usr/share/terminfo/d
-      $dlt/usr/share/terminfo/e
-      $dlt/usr/share/terminfo/f
-      $dlt/usr/share/terminfo/g
-      $dlt/usr/share/terminfo/k
-      $dlt/usr/share/terminfo/l
-      $dlt/usr/share/terminfo/n
-      $dlt/usr/share/terminfo/p
-      $dlt/usr/share/terminfo/r
-      $dlt/usr/share/terminfo/s
-      $dlt/usr/share/terminfo/t
-      $dlt/usr/share/terminfo/v
-      $dlt/usr/share/terminfo/x
-      $dlt/usr
-      $dlt/home
-      $dlt/usr/etc
-      $dlt/usr/bin
-      $dlt/usr/lib
-      $dlt/usr/share
-      $dlt
+      shellDirs=(
+        $dlt/tmp
+        $dlt/usr/libexec
+        $dlt/usr/share/terminfo
+        $dlt/usr/share/terminfo/a
+        $dlt/usr/share/terminfo/d
+        $dlt/usr/share/terminfo/e
+        $dlt/usr/share/terminfo/f
+        $dlt/usr/share/terminfo/g
+        $dlt/usr/share/terminfo/k
+        $dlt/usr/share/terminfo/l
+        $dlt/usr/share/terminfo/n
+        $dlt/usr/share/terminfo/p
+        $dlt/usr/share/terminfo/r
+        $dlt/usr/share/terminfo/s
+        $dlt/usr/share/terminfo/t
+        $dlt/usr/share/terminfo/v
+        $dlt/usr/share/terminfo/x
+        $dlt/usr
+        $dlt/home
+        $dlt/usr/etc
+        $dlt/usr/bin
+        $dlt/usr/lib
+        $dlt/usr/share
+        $dlt
+        )
+
+      filesTerminfo=(
+        $dlt/usr/share/terminfo/a/alacritty $dlt/usr/share/terminfo/a/alacritty+common
+        $dlt/usr/share/terminfo/a/alacritty-direct $dlt/usr/share/terminfo/a/ansi
+        $dlt/usr/share/terminfo/d/dtterm $dlt/usr/share/terminfo/d/dumb
+        $dlt/usr/share/terminfo/e/eterm-color
+        $dlt/usr/share/terminfo/f/foot $dlt/usr/share/terminfo/f/foot+base $dlt/usr/share/terminfo/f/foot-direct
+        $dlt/usr/share/terminfo/g/gnome $dlt/usr/share/terminfo/g/gnome-256color
+        $dlt/usr/share/terminfo/k/kitty $dlt/usr/share/terminfo/k/kitty+common $dlt/usr/share/terminfo/k/kitty-direct
+        $dlt/usr/share/terminfo/l/linux
+        $dlt/usr/share/terminfo/n/nsterm
+        $dlt/usr/share/terminfo/p/putty $dlt/usr/share/terminfo/p/putty-256color
+        $dlt/usr/share/terminfo/r/rxvt $dlt/usr/share/terminfo/r/rxvt-256color
+        $dlt/usr/share/terminfo/r/rxvt-unicode $dlt/usr/share/terminfo/r/rxvt-unicode-256color
+        $dlt/usr/share/terminfo/s/screen $dlt/usr/share/terminfo/s/screen-256color $dlt/usr/share/terminfo/s/screen2
+        $dlt/usr/share/terminfo/s/st $dlt/usr/share/terminfo/s/st-256color
+        $dlt/usr/share/terminfo/t/tmux $dlt/usr/share/terminfo/t/tmux-256color
+        $dlt/usr/share/terminfo/v/vt100 $dlt/usr/share/terminfo/v/vt102 $dlt/usr/share/terminfo/v/vt52
+        $dlt/usr/share/terminfo/x/xterm $dlt/usr/share/terminfo/x/xterm+256color $dlt/usr/share/terminfo/x/xterm-16color
+        $dlt/usr/share/terminfo/x/xterm-256color $dlt/usr/share/terminfo/x/xterm-color $dlt/usr/share/terminfo/x/xterm-kitty
+        $dlt/usr/share/terminfo/x/xterm-new
       )
+      filesBashBin=($dlt/usr/bin/bash)
+      filesBashLibs=(
+        $dlt/usr/lib/ld-android.so $dlt/usr/lib/libandroid-support.so $dlt/usr/lib/libc.so
+        $dlt/usr/lib/libdl.so $dlt/usr/lib/libiconv.so
+        $dlt/usr/lib/libncursesw.so.6 $dlt/usr/lib/libncursesw.so.6.5
+        $dlt/usr/lib/libreadline.so.8 $dlt/usr/lib/libreadline.so.8.3
+        $dlt/usr/lib/libsodium.so
+      )
+      filesTexEd=($dlt/usr/bin/nano $dlt/usr/bin/vim $dlt/usr/bin/vi)
+      filesTree=($dlt/usr/bin/tree)
 
-    filesTerminfo=(
-      $dlt/usr/share/terminfo/a/alacritty $dlt/usr/share/terminfo/a/alacritty+common
-      $dlt/usr/share/terminfo/a/alacritty-direct $dlt/usr/share/terminfo/a/ansi
-      $dlt/usr/share/terminfo/d/dtterm $dlt/usr/share/terminfo/d/dumb
-      $dlt/usr/share/terminfo/e/eterm-color
-      $dlt/usr/share/terminfo/f/foot $dlt/usr/share/terminfo/f/foot+base $dlt/usr/share/terminfo/f/foot-direct
-      $dlt/usr/share/terminfo/g/gnome $dlt/usr/share/terminfo/g/gnome-256color
-      $dlt/usr/share/terminfo/k/kitty $dlt/usr/share/terminfo/k/kitty+common $dlt/usr/share/terminfo/k/kitty-direct
-      $dlt/usr/share/terminfo/l/linux
-      $dlt/usr/share/terminfo/n/nsterm
-      $dlt/usr/share/terminfo/p/putty $dlt/usr/share/terminfo/p/putty-256color
-      $dlt/usr/share/terminfo/r/rxvt $dlt/usr/share/terminfo/r/rxvt-256color
-      $dlt/usr/share/terminfo/r/rxvt-unicode $dlt/usr/share/terminfo/r/rxvt-unicode-256color
-      $dlt/usr/share/terminfo/s/screen $dlt/usr/share/terminfo/s/screen-256color $dlt/usr/share/terminfo/s/screen2
-      $dlt/usr/share/terminfo/s/st $dlt/usr/share/terminfo/s/st-256color
-      $dlt/usr/share/terminfo/t/tmux $dlt/usr/share/terminfo/t/tmux-256color
-      $dlt/usr/share/terminfo/v/vt100 $dlt/usr/share/terminfo/v/vt102 $dlt/usr/share/terminfo/v/vt52
-      $dlt/usr/share/terminfo/x/xterm $dlt/usr/share/terminfo/x/xterm+256color $dlt/usr/share/terminfo/x/xterm-16color
-      $dlt/usr/share/terminfo/x/xterm-256color $dlt/usr/share/terminfo/x/xterm-color $dlt/usr/share/terminfo/x/xterm-kitty
-      $dlt/usr/share/terminfo/x/xterm-new
-    )
-    filesBashBin=($dlt/usr/bin/bash)
-    filesBashLibs=(
-      $dlt/usr/lib/ld-android.so $dlt/usr/lib/libandroid-support.so $dlt/usr/lib/libc.so
-      $dlt/usr/lib/libdl.so $dlt/usr/lib/libiconv.so
-      $dlt/usr/lib/libncursesw.so.6 $dlt/usr/lib/libncursesw.so.6.5
-      $dlt/usr/lib/libreadline.so.8 $dlt/usr/lib/libreadline.so.8.3
-      $dlt/usr/lib/libsodium.so
-    )
-    filesTexEd=($dlt/usr/bin/nano $dlt/usr/bin/vim $dlt/usr/bin/vi)
-    filesTree=($dlt/usr/bin/tree)
+      dir=("${shellDirs[@]}")
+      file=("${filesTerminfo[@]}" "${filesBashBin[@]}" "${filesBashLibs[@]}" "${filesTexEd[@]}" "${filesTree[@]}")
 
-    dir=("${shellDirs[@]}")
-    file=("${filesTerminfo[@]}" "${filesBashBin[@]}" "${filesBashLibs[@]}" "${filesTexEd[@]}" "${filesTree[@]}")
-
-      local missing_dir=false
-      for dirs in "${dir[@]}"; do
-        if [[ ! -d "$dirs" ]]; then
-          missing_dir=true
-          break
-        fi
-      done
-
-      if $missing_dir; then
-        debug "Some core directories are missing.\n"
-        info "Attempting to create required directories..\n"
-        sleep 0.5
-        bootStrapDirectories
-        boot.setupTermInfo
-
-      for dirs in "${dir[@]}"; do
+        local missing_dir=false
+        for dirs in "${dir[@]}"; do
           if [[ ! -d "$dirs" ]]; then
-            critical "Uh-Oh! the needed directories could not be created, the only explanation could be that shizuku failed. If shizuku works and this still failed, then you're on your own.\n\n"
+            missing_dir=true
+            break
+          fi
+        done
+
+        if $missing_dir; then
+          debug "Some core directories are missing.\n"
+          info "Attempting to create required directories..\n"
+          sleep 0.5
+          bootStrapDirectories
+          boot.setupTermInfo
+
+        for dirs in "${dir[@]}"; do
+            if [[ ! -d "$dirs" ]]; then
+              critical "Uh-Oh! the needed directories could not be created, the only explanation could be that shizuku failed. If shizuku works and this still failed, then you're on your own.\n\n"
+              return 1
+            fi
+          done
+        ok "All directories were successfully created!\n"
+        fi
+
+      local -a groupsToRepair
+      groupsToRepair=()
+      anyMissing "${filesTerminfo[@]}" && groupsToRepair+=("terminfo")
+      anyMissing "${filesBashBin[@]}"  && groupsToRepair+=("bashbin")
+      anyMissing "${filesBashLibs[@]}" && groupsToRepair+=("bashlibs")
+      anyMissing "${filesTexEd[@]}"    && groupsToRepair+=("texed")
+      anyMissing "${filesTree[@]}"     && groupsToRepair+=("tree")
+
+      if [[ ${#groupsToRepair[@]} -gt 0 ]]
+      then
+        debug "The directories exist but some files are missing.\n"
+        info "Attempting to create required files..\n"
+        sleep 0.5
+        openTermux && openShell
+        local grp
+        for grp in "${groupsToRepair[@]}"
+        do
+          case "$grp" in
+            terminfo) boot.setupTermInfo ;;
+            bashbin) copyBash ;;
+            bashlibs) findBashLibraries && copyBashLibraries && linkBashLibraries ;;
+            texed) boot.InstallTexEd ;;
+            tree) boot.InstallTree ;;
+          esac
+        done
+        for files in "${file[@]}"
+        do
+          if [[ ! -f "$files" ]]
+          then
+            critical "Uh-Oh! The needed files could not be created, the only explanation could be that shizuku failed. If shizuku works and this still failed, then you're on your own.\n"
             return 1
           fi
         done
-      ok "All directories were successfully created!\n"
+        ok "All files were successfully installed!\n"
+        sleep 0.2
+        printf "\n\n"
       fi
 
-    local -a groupsToRepair
-    groupsToRepair=()
-    anyMissing "${filesTerminfo[@]}" && groupsToRepair+=("terminfo")
-    anyMissing "${filesBashBin[@]}"  && groupsToRepair+=("bashbin")
-    anyMissing "${filesBashLibs[@]}" && groupsToRepair+=("bashlibs")
-    anyMissing "${filesTexEd[@]}"    && groupsToRepair+=("texed")
-    anyMissing "${filesTree[@]}"     && groupsToRepair+=("tree")
+        ct=/data/data/com.termux/
+        ctf=$ct/files/
+        etc=$PREFIX/etc/
+        bash=$etc/bash.bashrc
+        permsShouldBeOctal=3020
 
-    if [[ ${#groupsToRepair[@]} -gt 0 ]]
-    then
-      debug "The directories exist but some files are missing.\n"
-      info "Attempting to create required files..\n"
-      sleep 0.5
-      openTermux && openShell
-      local grp
-      for grp in "${groupsToRepair[@]}"
-      do
-        case "$grp" in
-          terminfo) boot.setupTermInfo ;;
-          bashbin) copyBash ;;
-          bashlibs) findBashLibraries && copyBashLibraries && linkBashLibraries ;;
-          texed) boot.InstallTexEd ;;
-          tree) boot.InstallTree ;;
-        esac
-      done
-      for files in "${file[@]}"
-      do
-        if [[ ! -f "$files" ]]
-        then
-          critical "Uh-Oh! The needed files could not be created, the only explanation could be that shizuku failed. If shizuku works and this still failed, then you're on your own.\n"
-          return 74
+        permsAre=$(($(fperm $ct)+$(fperm $ctf)+$(fperm $etc)+$(fperm $bash)))
+
+        if (($permsAre == $permsShouldBeOctal)); then
+          config::LsColors
+          return
+        else
+          openBashrc
+          return
         fi
-      done
-      ok "All files were successfully installed!\n"
-      sleep 0.2
-      printf "\n\n"
-    fi
+  }
 
-      ct=/data/data/com.termux/
-      ctf=$ct/files/
-      etc=$PREFIX/etc/
-      bash=$etc/bash.bashrc
-      permsShouldBeOctal=3020
-
-      permsAre=$(($(fperm $ct)+$(fperm $ctf)+$(fperm $etc)+$(fperm $bash)))
-
-      if (($permsAre == $permsShouldBeOctal)); then
-        config::LsColors
-        return
-      else
-        openBashrc
-        return
-      fi
-}
-
-local openBashrc() {
-  ct=/data/data/com.termux
-  info "\nFixing perm errors on login..\n"
-  {chmod 755 $ct $ct/files/ $ct/files/usr/ $ct/files/usr/etc $ct/files/usr/etc/bash.bashrc} && return 0;
-}
+  local openBashrc() {
+    ct=/data/data/com.termux
+    info "\nFixing perm errors on login..\n"
+    {chmod 755 $ct $ct/files/ $ct/files/usr/ $ct/files/usr/etc $ct/files/usr/etc/bash.bashrc} && return 0;
+  }
 
   
   local changeTermuxTexEdperms() {
