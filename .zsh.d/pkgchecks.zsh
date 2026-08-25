@@ -2,11 +2,16 @@
 
 ## TERMUX package manager detection flow
 
+PKGBASE="$HOME/.assets/"
+PKGFILE="$PKGBASE/pkg"
+
+[[ ! -d "$PKGBASE" ]] && mkdir -p "$PKGBASE"
+
 local __echoToPkg() {
-  echo "$1" > ~/.assets/pkg
+  echo "$1" > $PKGFILE
 }
 
-alias repkg='rm ~/.assets/pkg && szsh'
+alias repkg='rm $PKGFILE && szsh'
 alias szsh='clear && exec zsh'
 
 runsilent() {
@@ -105,11 +110,11 @@ fi
 
 trap '' INT
 
-if [[ ! -f ~/.assets/pkg ]]; then
-  touch ~/.assets/pkg
+if [[ ! -f $PKGFILE ]]; then
+  touch $PKGFILE
 fi
 
-if [[ ! -s ~/.assets/pkg ]]; then
+if [[ ! -s $PKGFILE ]]; then
   pkgcheck
   case "$?" in
     4) echo "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
@@ -137,7 +142,7 @@ if [[ ! -s ~/.assets/pkg ]]; then
          ;;
 
        3) err "Unable to set package manager as no supported were detected.\n"
-        rm ~/.assets/pkg
+        rm $PKGFILE
         return
         ;;
 
@@ -153,7 +158,7 @@ if [[ ! -s ~/.assets/pkg ]]; then
   esac
 fi
 
-filevalid="$(cat ~/.assets/pkg)"
+filevalid="$(cat $PKGFILE)"
 
 
 if [[ "$filevalid" != "apt" && "$filevalid" != "pacman" ]]; then
@@ -185,7 +190,7 @@ if [[ "$filevalid" == "pacman" ]]; then
   fi
 fi
 
-declare -g pkg=$(cat ~/.assets/pkg)
+declare -g pkg=$(cat $PKGFILE)
 declare -g PKG="$pkg"
 
 trap - INT
