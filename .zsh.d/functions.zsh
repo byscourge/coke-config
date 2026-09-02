@@ -2516,7 +2516,6 @@ the second flag is ${WHITE}--clean${NC}: remove trash/junk from the HOME directo
 
             chmod -R 770 $PREFIX/tmp/tmpBkDir/
 
-            rm -rfv "$PREFIX/tmp/tmpBkDir/$hdate-home/.local/share"
             rm -rfv "$PREFIX/tmp/tmpBkDir/$hdate-home/.cache"
             rm -rfv "$PREFIX/tmp/tmpBkDir/$hdate-home/.npm"
 
