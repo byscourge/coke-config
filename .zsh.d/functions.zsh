@@ -1572,7 +1572,6 @@ runExecEnviroment() {
     export PREFIX=/data/local/tmp/sh/usr
     export SHELL=/data/local/tmp/sh/usr/bin/bash
     export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
-    export termuxPrefix=/data/data/com.termux/files/usr
     export TERM=xterm-256color
     export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
     export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
@@ -1596,7 +1595,6 @@ runExecEnviroment() {
       export PREFIX=/data/local/tmp/sh/usr
       export SHELL=/data/local/tmp/sh/usr/bin/bash
       export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
-      export termuxPrefix=/data/data/com.termux/files/usr
       export TERM=xterm-256color
       export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
       export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
@@ -1620,7 +1618,6 @@ runExecEnviroment() {
         export PREFIX=/data/local/tmp/sh/usr
         export SHELL=/data/local/tmp/sh/usr/bin/bash
         export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
-        export termuxPrefix=/data/data/com.termux/files/usr
         export TERM=xterm-256color
         export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
         export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
@@ -1644,7 +1641,6 @@ runExecEnviroment() {
         export PREFIX=/data/local/tmp/sh/usr
         export SHELL=/data/local/tmp/sh/usr/bin/bash
         export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
-        export termuxPrefix=/data/data/com.termux/files/usr
         export TERM=xterm-256color
         export TERMINFO=/data/local/tmp/sh/usr/share/terminfo
         export PS1=\"\\[\e[38;5;129m\]:\\\$(pwd) # \\[\e[0m\]\"
