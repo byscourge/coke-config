@@ -549,7 +549,7 @@ local vim+nano.installed() {
     
     echo '\033[1m\033[38;2;125;167;205mCreating common directories'
 
-    mkdir -p sh/home/ sh/usr/bin/  sh/usr/lib/ sh/usr/etc/  sh/usr/share/terminfo/ sh/usr/libexec/ sh/tmp"
+    mkdir -p sh/home/ sh/usr/bin/  sh/usr/lib/ sh/usr/etc/  sh/usr/share/terminfo/ sh/usr/libexec/ sh/usr/tmp"
   }
 
   local findLibPaths() {
@@ -713,7 +713,7 @@ local initEnviroment() {
     [[ -d /data/local/tmp/sh ]] || return 1
     dlt=/data/local/tmp/sh
     shellDirs=(
-      $dlt/tmp
+      $dlt/usr/tmp
       $dlt/usr/libexec
       $dlt/usr/share/terminfo
       $dlt/usr/share/terminfo/a
@@ -910,7 +910,7 @@ local initEnviroment() {
     fi
 
     shellDirs=(
-      $dlt/tmp
+      $dlt/usr/tmp
       $dlt/usr/libexec
       $dlt/usr/share/terminfo
       $dlt/usr/share/terminfo/a
@@ -1061,7 +1061,7 @@ local initEnviroment() {
       fi
 
       shellDirs=(
-        $dlt/tmp
+        $dlt/usr/tmp
         $dlt/usr/libexec
         $dlt/usr/share/terminfo
         $dlt/usr/share/terminfo/a
@@ -1274,12 +1274,12 @@ if [[ -z "$1" ]]; then
     boot.Init+Validation
     return
   else
-    err "seems like the su() enviroment isn't installed, or some files were missing.\nfix? [y/N]: "
+    debug "seems like the su() enviroment isn't installed,\nor some files were missing.${DARK_PURPLE}\n\nfix? [y/N]: ${NC}"
     local reply
     read -r reply
     case "$reply" in
       y | Y)
-        boot.Init+Validation
+        boot.Heal
         ;;
       *)
         w_info "Abort.\n"
@@ -1552,6 +1552,9 @@ fi
 
 
 runExecEnviroment() {
+  SU_HOME_ENV="/data/local/tmp/sh/home/"
+  SU_TMP_ENV="/data/local/tmp/sh/usr/tmp"
+
   if [[ -z "$1" ]]; then
     rish -c "\
     export PATH=/data/local/tmp/sh/usr/bin/:\$PATH && \
@@ -1559,7 +1562,13 @@ runExecEnviroment() {
     exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
 
     export PATH=/data/local/tmp/sh/usr/bin:\$PATH
-    export HOME=/data/local/tmp/sh/home
+    export HOME=$SU_HOME_ENV
+    export XDG_CONFIG_HOME=$SU_HOME_ENV/.config
+    export XDG_CACHE_HOME=$SU_HOME_ENV/.cache
+    export XDG_DATA_HOME=$SU_HOME_ENV/.local/share
+    export XDG_STATE_HOME=$SU_HOME_ENV/.local/state
+    export TMPDIR=$SU_TMP_ENV
+    export XDG_RUNTIME_DIR=$SU_TMP_ENV
     export PREFIX=/data/local/tmp/sh/usr
     export SHELL=/data/local/tmp/sh/usr/bin/bash
     export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
@@ -1577,7 +1586,13 @@ runExecEnviroment() {
       export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
       exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
       export PATH=/data/local/tmp/sh/usr/bin:\$PATH
-      export HOME=/data/local/tmp/sh/home
+      export HOME=$SU_HOME_ENV
+      export XDG_CONFIG_HOME=$SU_HOME_ENV/.config
+      export XDG_CACHE_HOME=$SU_HOME_ENV/.cache
+      export XDG_DATA_HOME=$SU_HOME_ENV/.local/share
+      export XDG_STATE_HOME=$SU_HOME_ENV/.local/state
+      export TMPDIR=$SU_TMP_ENV
+      export XDG_RUNTIME_DIR=$SU_TMP_ENV
       export PREFIX=/data/local/tmp/sh/usr
       export SHELL=/data/local/tmp/sh/usr/bin/bash
       export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
@@ -1595,7 +1610,13 @@ runExecEnviroment() {
         export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib:$LD_LIBRARY_PATH && \
         exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
         export PATH=/data/local/tmp/sh/usr/bin:\$PATH
-        export HOME=/data/local/tmp/sh/home
+        export HOME=$SU_HOME_ENV
+        export XDG_CONFIG_HOME=$SU_HOME_ENV/.config
+        export XDG_CACHE_HOME=$SU_HOME_ENV/.cache
+        export XDG_DATA_HOME=$SU_HOME_ENV/.local/share
+        export XDG_STATE_HOME=$SU_HOME_ENV/.local/state
+        export TMPDIR=$SU_TMP_ENV
+        export XDG_RUNTIME_DIR=$SU_TMP_ENV
         export PREFIX=/data/local/tmp/sh/usr
         export SHELL=/data/local/tmp/sh/usr/bin/bash
         export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
@@ -1613,7 +1634,13 @@ runExecEnviroment() {
         exec bash -c 'export LD_LIBRARY_PATH=/data/local/tmp/sh/usr/lib && \
 
         export PATH=/data/local/tmp/sh/usr/bin:\$PATH
-        export HOME=/data/local/tmp/sh/home
+        export HOME=$SU_HOME_ENV
+        export XDG_CONFIG_HOME=$SU_HOME_ENV/.config
+        export XDG_CACHE_HOME=$SU_HOME_ENV/.cache
+        export XDG_DATA_HOME=$SU_HOME_ENV/.local/share
+        export XDG_STATE_HOME=$SU_HOME_ENV/.local/state
+        export TMPDIR=$SU_TMP_ENV
+        export XDG_RUNTIME_DIR=$SU_TMP_ENV
         export PREFIX=/data/local/tmp/sh/usr
         export SHELL=/data/local/tmp/sh/usr/bin/bash
         export LS_COLORS=\"di=34:fi=92:ln=96:ex=31\"
