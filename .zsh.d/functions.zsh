@@ -15,7 +15,7 @@ search() {
   am start -a android.intent.action.VIEW -d "https://www.google.com/search?q=$term"
 }
 
-pkch() { ## simple pkg searching function
+apksearch() { ## simple pkg searching function
   rish -c "pm list packages | grep -i \"$*\" | sed 's/package://g'"
 }
 
@@ -121,21 +121,44 @@ zg() { ## z glob
   fi
 }
 
+apkpath() {
 
-exap() { # simple apk extraction function
+  argpath="$1"
+  pathexists="$(fsudo "pm dump $argpath"|head -n 2)"
+
+  while IFS=  read -r line; do
+    argpath_invalid=$(grep -i "Unable to find package")
+  done < <(echo $pathexists)
+
+  [[ "$argpath_invalid" =~ ^Unable ]] && {
+    err "Unable to find package: $1\n"
+    return 1
+  }
+
+  xpath=$(fsudo "pm path $1")
+  xpath=${xpath:8} # remove 'package:' prefix
+
+  echo "$xpath"
+  return 0
+}
+
+apkcopy() { # simple apk extraction function
   local pacname pacpath target
   pacname="$1"
   target="$2"
 
-  pacpath=$(soap "$pacname")
-  pacpath=${pacpath:8}
-
+  pacpath=$(apkpath "$pacname"|head -n 1)
+  
   if [[ -z "$target" ]]; then
-    cp "$pacpath" "./$pacname.apk" && \
+    cp "$pacpath" "./$pacname.apk" && {
     ok "Success! ${CYAN}$pacname${GREEN} copied to ${CYAN}./$pacname.apk${NC}\n"
+    return 0
+  }
   else
-    cp "$pacpath" "$target.apk" && \
+    cp "$pacpath" "$target.apk" && {
     ok "Success! ${CYAN}$pacname${GREEN} copied to ${CYAN}$target.apk$NC\n"
+    return 0
+  }
   fi
 }
 
