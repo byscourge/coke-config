@@ -162,10 +162,6 @@ apkcopy() { # simple apk extraction function
   fi
 }
 
-
-
-
-
 apm() { # simple android package manager
   if [[ $# -eq 0 ]]; then
     info "Listing all installed apps..\n"
