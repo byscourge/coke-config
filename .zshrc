@@ -1,4 +1,4 @@
-# built on zsh 5.9.1
+# initially built on zsh 5.9.1
 # https://github.com/byscourge/coke-config
 
 if [[ "$OSTYPE" == "linux-android" ]]; then # check if operating system is android
